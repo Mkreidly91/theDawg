@@ -1,5 +1,4 @@
 class theDawgCommand {
-  constructor() {}
   name;
   action;
 

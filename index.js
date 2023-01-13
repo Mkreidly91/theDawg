@@ -6,6 +6,7 @@ const {
   REST,
   Partials,
   Routes,
+  VoiceChannel,
 } = require("discord.js");
 const ping = require("./commands/ping");
 const { mute } = require("./messageCommands/commands");
@@ -45,6 +46,22 @@ let textChannel;
 client.once(Events.ClientReady, (c) => {
   console.log(`Ready! Logged in as ${c.user.tag}`);
   textChannel = client.channels.cache.get(TEXT_CHANNEL_ID);
+  const voiceChannel = client.channels.cache.get(VOICE_CHANNEL_ID);
+  console.log(voiceChannel.joinable);
+
+  // voiceChannel
+  //   .send({
+  //     files: [
+  //       {
+  //         attachment:
+  //           "/Users/mostafa/Desktop/Discord-Bot/Resources/Oddling.mp3",
+  //         name: "Oddlng.mp3",
+  //         description: "A description of the file",
+  //       },
+  //     ],
+  //   })
+  //   .then(console.log)
+  //   .catch(console.error);
   // textChannel.send({
   // content: "I am the Dawg, the big bad Dawg",
   // files: [
