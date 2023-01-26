@@ -8,9 +8,8 @@ const {
   Routes,
   VoiceChannel,
 } = require("discord.js");
-const ping = require("./commands/ping");
-const { mute } = require("./messageCommands/commands");
 
+const { joinVoice } = require("./voice.js");
 const {
   Guilds,
   GuildMessages,
@@ -18,6 +17,7 @@ const {
   MessageContent,
   GuildMembers,
   DirectMessages,
+  GuildVoiceStates,
 } = GatewayIntentBits;
 require("dotenv").config();
 
@@ -36,6 +36,7 @@ const client = new Client({
     DirectMessages,
     GuildMessages,
     GuildIntegrations,
+    GuildVoiceStates,
   ],
   partials: [Partials.Channel],
 });
@@ -47,21 +48,8 @@ client.once(Events.ClientReady, (c) => {
   console.log(`Ready! Logged in as ${c.user.tag}`);
   textChannel = client.channels.cache.get(TEXT_CHANNEL_ID);
   const voiceChannel = client.channels.cache.get(VOICE_CHANNEL_ID);
-  console.log(voiceChannel.joinable);
 
-  // voiceChannel
-  //   .send({
-  //     files: [
-  //       {
-  //         attachment:
-  //           "/Users/mostafa/Desktop/Discord-Bot/Resources/Oddling.mp3",
-  //         name: "Oddlng.mp3",
-  //         description: "A description of the file",
-  //       },
-  //     ],
-  //   })
-  //   .then(console.log)
-  //   .catch(console.error);
+
   // textChannel.send({
   // content: "I am the Dawg, the big bad Dawg",
   // files: [
@@ -76,6 +64,7 @@ client.once(Events.ClientReady, (c) => {
 
 client.on(Events.MessageCreate, async (message) => {
   const { content, member } = message;
+
   if (!message.author.bot && message.channel.isDMBased()) {
     message.channel.send("shu baddak");
   }

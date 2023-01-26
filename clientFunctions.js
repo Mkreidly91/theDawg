@@ -1,4 +1,5 @@
 const Commands = require("./messageCommands/commands");
+const theDawgError = require("./Errors/theDawgError");
 const { TOKEN, PREFIX, GUILD_ID, TEXT_CHANNEL_ID, VOICE_CHANNEL_ID } =
   process.env;
 const isAdmin = (member) => {
