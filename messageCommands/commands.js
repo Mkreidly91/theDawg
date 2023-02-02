@@ -8,7 +8,17 @@ const {
   pasta1,
 } = require("./commandInstances");
 
-const { topg, kreiks, play, pause, resume } = require("./voiceCommands");
+const {
+  topg,
+  kreiks,
+  play,
+  pause,
+  resume,
+  skip,
+  stop,
+  search,
+  seek,
+} = require("./voiceCommands");
 module.exports = {
   mute,
   unmute,
@@ -22,4 +32,8 @@ module.exports = {
   play,
   pause,
   resume,
+  skip,
+  stop,
+  search,
+  seek,
 };

@@ -2,6 +2,7 @@ const Commands = require("./messageCommands/commands");
 const theDawgError = require("./Errors/theDawgError");
 const { TOKEN, PREFIX, GUILD_ID, TEXT_CHANNEL_ID, VOICE_CHANNEL_ID } =
   process.env;
+
 const isAdmin = (member) => {
   return member.roles.cache.find((role) => role.name === "Admin") !== undefined
     ? true
@@ -20,7 +21,7 @@ const channelController = (message) => {
       } else {
         new theDawgError(
           message.channel,
-          "Access Denied, you do not have admin preveliges"
+          "Access Denied, you do not have admin privileges"
         ).send();
       }
     }
