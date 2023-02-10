@@ -128,10 +128,6 @@ const joinVoice = async ({ textChannel, voiceChannel }) => {
   }
 };
 
-const playService = (songname, textchannel, guild, voicechannel) => {
-  let = getConnectionObject(textchannel, guild, voicechannel);
-};
-
 const addToQ = async (string) => {
   let { textChannel, voiceChannel, queue } = connectionObject;
   try {

@@ -182,5 +182,9 @@ const playYt = async (audioManager) => {
     console.log(error);
   }
 };
-
-module.exports = { joinVoice, playYt, addToQ };
+const destroyConnection = (audioManager) => {
+  const { connection, audioPlayer } = audioManager;
+  connection.destroy();
+  audioPlayer.removeAllListeners();
+};
+module.exports = { joinVoice, playYt, addToQ, destroyConnection };

@@ -1,14 +1,13 @@
-const { getAudioManager, getGuild, guildCollection } = require("../database");
+const { getAudioManager, resetState } = require("../database");
+const { destroyConnection } = require("../Helpers/voice.helpers");
 
-const pauseService = (message) => {
+const stopService = (message) => {
   const {
     member: {
       voice: { channel: voiceChannel },
     },
     guild: { id: guildId },
   } = message;
-
-  const { id: channelId } = voiceChannel;
 
   const audioManager = getAudioManager(guildId);
   const { audioPlayer } = audioManager;
@@ -17,8 +16,11 @@ const pauseService = (message) => {
     return { error: "No audio player connected" };
   }
 
-  audioPlayer.pause();
+  audioPlayer.stop();
+  destroyConnection(audioManager);
+  resetState(guildId);
+
   return { error: "" };
 };
 
-module.exports = pauseService;
+module.exports = stopService;

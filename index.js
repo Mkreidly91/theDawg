@@ -52,29 +52,18 @@ client.once(Events.ClientReady, (c) => {
 
   c.guilds.cache.forEach((guild) => {
     if (guild) {
-      const audioManager = {};
-      const voiceChannels = guild.channels.cache.map((channel) => {
-        if (channel.type === 2) {
-          return channel.id;
-        }
-      });
-      voiceChannels.forEach((id) => {
-        if (id) {
-          audioManager[id] = {
-            audioPlayer: null,
-            textChannel: null,
-            voiceChannel: null,
-            connection: null,
-            queue: [],
-            isPlaying: false,
-            currentSong: null,
-          };
-        }
-      });
       guildCollection.set(guild.id, {
         guildId: guild.id,
         guildName: guild.name,
-        audioManager,
+        audioManager: {
+          audioPlayer: null,
+          textChannel: null,
+          voiceChannel: null,
+          connection: null,
+          queue: [],
+          isPlaying: false,
+          currentSong: null,
+        },
       });
     }
   });

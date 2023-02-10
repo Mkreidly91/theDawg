@@ -14,16 +14,16 @@ const playService = async ({ message, args }) => {
   try {
     const audioManager = joinVoice({
       message,
-      audioManager: getOrCreate({ guildId, channelId }),
+      audioManager: getOrCreate(guildId),
     });
 
     const addedResponse = await addToQ({
       args,
-      audioManager: getAudioManager({ guildId, channelId }),
+      audioManager: getAudioManager(guildId),
     });
 
-    playYt(getAudioManager({ guildId, channelId }));
-    console.log(addedResponse);
+    playYt(getAudioManager(guildId));
+
     return { addedResponse };
   } catch (e) {
     console.log(e);

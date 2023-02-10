@@ -5,12 +5,12 @@ const getGuild = (guildId) => {
   return guildCollection.get(guildId);
 };
 
-const getAudioManager = ({ guildId, channelId }) => {
-  return guildCollection.get(guildId).audioManager[channelId];
+const getAudioManager = (guildId) => {
+  return guildCollection.get(guildId).audioManager;
 };
 
-const createAudioManager = ({ guildId, channelId }) => {
-  return (guildCollection.get(guildId).audioManager[channelId] = {
+const createAudioManager = (guildId) => {
+  return (guildCollection.get(guildId).audioManager = {
     audioPlayer: null,
     textChannel: null,
     voiceChannel: null,
@@ -21,16 +21,13 @@ const createAudioManager = ({ guildId, channelId }) => {
   });
 };
 
-const getOrCreate = ({ guildId, channelId }) => {
-  const audioManager = getAudioManager({ guildId, channelId });
-
-  return audioManager
-    ? audioManager
-    : createAudioManager({ guildId, channelId });
+const getOrCreate = (guildId) => {
+  const audioManager = getAudioManager(guildId);
+  return audioManager ? audioManager : createAudioManager(guildId);
 };
 
-const resetState = ({ guildId, channelId }) => {
-  guildCollection.get(guildId).audioManager[channelId] = {
+const resetState = (guildId) => {
+  guildCollection.get(guildId).audioManager = {
     audioPlayer: null,
     textChannel: null,
     voiceChannel: null,
@@ -41,11 +38,11 @@ const resetState = ({ guildId, channelId }) => {
   };
 };
 
-const destroyConnection = ({ guildId, channelId }) => {
-  const { connection, audioPlayer } = getAudioManager({ guildId, channelId });
+const destroyConnection = (guildId) => {
+  const { connection, audioPlayer } = getAudioManager(guildId);
   connection.destroy();
   audioPlayer.removeAllListeners();
-  resetState({ guildId, channelId });
+  resetState(guildId);
 };
 
 module.exports = {
@@ -54,4 +51,5 @@ module.exports = {
   getAudioManager,
   createAudioManager,
   getOrCreate,
+  resetState,
 };
