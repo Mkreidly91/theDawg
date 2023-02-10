@@ -23,7 +23,8 @@ require("dotenv").config();
 
 const theDawgError = require("./Errors/theDawgError");
 const Commands = require("./messageCommands/commands");
-const { channelController } = require("./clientFunctions");
+const { channelController, routeManager } = require("./clientFunctions");
+const { guildCollection } = require("./database/index.js");
 const { TOKEN, PREFIX, GUILD_ID, TEXT_CHANNEL_ID, VOICE_CHANNEL_ID } =
   process.env;
 
@@ -49,6 +50,34 @@ client.once(Events.ClientReady, (c) => {
   textChannel = client.channels.cache.get(TEXT_CHANNEL_ID);
   const voiceChannel = client.channels.cache.get(VOICE_CHANNEL_ID);
 
+  c.guilds.cache.forEach((guild) => {
+    if (guild) {
+      const audioManager = {};
+      const voiceChannels = guild.channels.cache.map((channel) => {
+        if (channel.type === 2) {
+          return channel.id;
+        }
+      });
+      voiceChannels.forEach((id) => {
+        if (id) {
+          audioManager[id] = {
+            audioPlayer: null,
+            textChannel: null,
+            voiceChannel: null,
+            connection: null,
+            queue: [],
+            isPlaying: false,
+            currentSong: null,
+          };
+        }
+      });
+      guildCollection.set(guild.id, {
+        guildId: guild.id,
+        guildName: guild.name,
+        audioManager,
+      });
+    }
+  });
 
   // textChannel.send({
   // content: "I am the Dawg, the big bad Dawg",
@@ -64,13 +93,16 @@ client.once(Events.ClientReady, (c) => {
 
 client.on(Events.MessageCreate, async (message) => {
   const { content, member } = message;
-
   if (!message.author.bot && message.channel.isDMBased()) {
     message.channel.send("shu baddak");
   }
-  channelController(message);
+  try {
+    //channelController(message);
+    routeManager(message);
+  } catch (error) {
+    console.log(error);
+  }
 });
-const date = new Date().getTime();
 
 client.on(Events.MessageDelete, (message) => {
   // message.channel.send(`Gotcha! Someone deleted "${message.content}"`);

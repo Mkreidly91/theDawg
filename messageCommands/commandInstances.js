@@ -1,7 +1,8 @@
 const theDawgCommand = require("./theDawgCommand");
 const theDawgError = require("../Errors/theDawgError");
+const { voiceConnectionError } = require("../Errors/voiceErrors");
 
-const mute = new theDawgCommand().setName("mute").setAction((message) => {
+const mute = new theDawgCommand().setName("mute").setAction(async (message) => {
   const members = message.mentions.members;
   members.forEach((member) => {
     const isConnected = member.voice.channel;
@@ -18,57 +19,64 @@ const mute = new theDawgCommand().setName("mute").setAction((message) => {
   });
 });
 
-const unmute = new theDawgCommand().setName("unmute").setAction((message) => {
-  const members = message.mentions.members;
-  members.forEach((member) => {
-    const isConnected = member.voice.channel;
-    const user = member.user.username;
-    if (!isConnected) {
-      new theDawgError(
-        message.channel,
-        `${user} is not connected to voice`
-      ).send();
-      return;
-    }
-    member.voice.setMute(false);
-    message.channel.send(`Successfully unmuted ${user}`);
+const unmute = new theDawgCommand()
+  .setName("unmute")
+  .setAction(async (message) => {
+    const members = message.mentions.members;
+    members.forEach((member) => {
+      const isConnected = member.voice.channel;
+      const user = member.user.username;
+      if (!isConnected) {
+        new theDawgError(
+          message.channel,
+          `${user} is not connected to voice`
+        ).send();
+        return;
+      }
+      member.voice.setMute(false);
+      message.channel.send(`Successfully unmuted ${user}`);
+    });
   });
-});
 
-const deafen = new theDawgCommand().setName("deafen").setAction((message) => {
-  const members = message.mentions.members;
-  members.forEach((member) => {
-    const isConnected = member.voice.channel;
-    const user = member.user.username;
-    if (!isConnected) {
-      new theDawgError(
-        message.channel,
-        `${user} is not connected to voice`
-      ).send();
-      return;
-    }
-    member.voice.setDeaf(true);
-    message.channel.send(`Successfully deafened ${user}`);
+const deafen = new theDawgCommand()
+  .setName("deafen")
+  .setAction(async (message) => {
+    const members = message.mentions.members;
+    members.forEach((member) => {
+      const isConnected = member.voice.channel;
+      const user = member.user.username;
+      if (!isConnected) {
+        new theDawgError(
+          message.channel,
+          `${user} is not connected to voice`
+        ).send();
+        return;
+      }
+      member.voice.setDeaf(true);
+      message.channel.send(`Successfully deafened ${user}`);
+    });
   });
-});
-const undeafen = new theDawgCommand().setName("deafen").setAction((message) => {
-  const members = message.mentions.members;
-  members.forEach((member) => {
-    const isConnected = member.voice.channel;
-    const user = member.user.username;
-    if (!isConnected) {
-      new theDawgError(
-        message.channel,
-        `${user} is not connected to voice`
-      ).send();
-      return;
-    }
-    member.voice.setDeaf(false);
-    message.channel.send(`Successfully undeafened ${user}`);
-  });
-});
 
-const nuke = new theDawgCommand().setName("nuke").setAction((message) => {
+const undeafen = new theDawgCommand()
+  .setName("deafen")
+  .setAction(async (message) => {
+    const members = message.mentions.members;
+    members.forEach((member) => {
+      const isConnected = member.voice.channel;
+      const user = member.user.username;
+      if (!isConnected) {
+        new theDawgError(
+          message.channel,
+          `${user} is not connected to voice`
+        ).send();
+        return;
+      }
+      member.voice.setDeaf(false);
+      message.channel.send(`Successfully undeafened ${user}`);
+    });
+  });
+
+const nuke = new theDawgCommand().setName("nuke").setAction(async (message) => {
   const args = message.content.split(" ")[1];
   const isCorrectFormat = (args) => {
     const int = parseInt(args);
@@ -91,12 +99,11 @@ const nuke = new theDawgCommand().setName("nuke").setAction((message) => {
 
 const khallisne = new theDawgCommand()
   .setName("ta3a khallisne")
-  .setAction((message) => {
+  .setAction(async (message) => {
     const members = message.mentions.members;
     members.forEach((member) => {
       message.channel.send(`Successfully annoyed ${member.user.username}`);
       let i = 0;
-
       const intervalId = setInterval(() => {
         member.send("YALLLLA");
         i++;
@@ -107,26 +114,22 @@ const khallisne = new theDawgCommand()
     });
   });
 
-const pasta1 = new theDawgCommand().setName("pasta1").setAction((message) => {
-  const args = message.content.split(" ")[1];
-  const isCorrectFormat = (args) => {
-    const int = parseInt(args);
-    if (!int) return false;
-    return int > 0 && int <= 10;
-  };
-  if (!isCorrectFormat(args)) {
-    new theDawgError(message.channel, `The argument should be between 1 && 10`);
-    return;
-  }
-  let i = 0;
-  const intervalId = setInterval(() => {
-    message.channel.send(
-      "W mostafa ma mgalle since ever w mazhar ma mgalle min shahren w ahmad ma mgalle since ever so idk leh kebseene 2ele ta gale more than 1 so dabrowanya ghezlan"
-    );
-  }, 1000);
-  setTimeout(() => {
-    clearInterval(intervalId);
-  }, args * 1000 + 1000);
-});
+const pasta1 = new theDawgCommand()
+  .setName("pasta1")
+  .setAction(async (message) => {
+    const args = message.content.split(" ")[1];
+    const isCorrectFormat = (args) => {
+      const int = parseInt(args);
+      if (!int) return false;
+      return int > 0 && int <= 10;
+    };
+    if (!isCorrectFormat(args)) {
+      new theDawgError(
+        message.channel,
+        `The argument should be between 1 && 10`
+      ).send();
+      return;
+    }
+  });
 
 module.exports = { mute, unmute, deafen, undeafen, nuke, khallisne, pasta1 };

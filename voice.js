@@ -14,6 +14,7 @@ const theDawgError = require("./Errors/theDawgError");
 const { seekArgsError, audioPlayerError } = require("./Errors/voiceErrors");
 
 const play = require("play-dl");
+const guildCollection = require("./guildCollection");
 
 const connectionObject = {
   audioPlayer: null,
@@ -56,7 +57,6 @@ const searchSong = async (string) => {
     return { info, type: "video" };
   } else if (validate === "playlist") {
     const playlistInfo = await play.playlist_info(string);
-
     const videos = await Promise.allSettled(
       playlistInfo.videos.map(async (video) => {
         const videoInfo = await play.video_info(video.url);
@@ -69,9 +69,11 @@ const searchSong = async (string) => {
 };
 
 const joinVoice = async ({ textChannel, voiceChannel }) => {
-  if (connectionObject.voiceChannel) return;
   const channelId = voiceChannel.id;
   const guildId = voiceChannel.guild.id;
+
+  console.log(guildCollection);
+  if (connectionObject.voiceChannel) return;
 
   //set the text channel and voice channel in connectionObject,so we can have access to them anywhere.
 
@@ -124,6 +126,10 @@ const joinVoice = async ({ textChannel, voiceChannel }) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+const playService = (songname, textchannel, guild, voicechannel) => {
+  let = getConnectionObject(textchannel, guild, voicechannel);
 };
 
 const addToQ = async (string) => {

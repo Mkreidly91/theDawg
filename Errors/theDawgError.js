@@ -4,8 +4,8 @@ class theDawgError {
     this.msg = msg;
   }
 
-  send() {
-    this.channel.send(`theDawgError: ${this.msg}`);
+  async send() {
+    await this.channel.send(`theDawgError: ${this.msg}`);
   }
 }
 

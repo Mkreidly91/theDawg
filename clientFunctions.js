@@ -9,6 +9,8 @@ const isAdmin = (member) => {
     : false;
 };
 
+const routes = require("./routes");
+
 const channelController = (message) => {
   const { content, member } = message;
   if (!message.author.bot && !message.channel.isDMBased()) {
@@ -27,5 +29,22 @@ const channelController = (message) => {
     }
   }
 };
-
-module.exports = { channelController };
+const routeManager = (message) => {
+  const { content, member } = message;
+  if (!message.author.bot && !message.channel.isDMBased()) {
+    if (content.trim().startsWith(PREFIX)) {
+      if (isAdmin(member)) {
+        const command = content.substring(1).split(" ")[0];
+        routes[command]
+          ? routes[command](message)
+          : new theDawgError(message.channel, "Invalid Command").send();
+      } else {
+        new theDawgError(
+          message.channel,
+          "Access Denied, you do not have admin privileges"
+        ).send();
+      }
+    }
+  }
+};
+module.exports = { channelController, routeManager };

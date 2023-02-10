@@ -4,6 +4,7 @@ const {
   voiceConnectionError,
   playArgsError,
 } = require("../Errors/voiceErrors");
+const { ModalBuilder } = require("discord.js");
 
 const {
   joinVoice,
@@ -16,6 +17,8 @@ const {
   stopMusic,
   searchSong,
   seekInterval,
+  showQ,
+  songRadio,
 } = require("../voice");
 
 const topg = new theDawgCommand().setName("topG").setAction(async (message) => {
@@ -23,9 +26,11 @@ const topg = new theDawgCommand().setName("topG").setAction(async (message) => {
   const voiceChannel = member.voice.channel;
   const channelId = voiceChannel.id;
   const guildId = voiceChannel.guild.id;
+
   if (!connectionObject.textChannel) {
     connectionObject.textChannel = message.channel;
   }
+
   if (voiceConnectionError(message)) return;
 
   joinVoice({ textChannel, voiceChannel });
@@ -48,7 +53,6 @@ const kreiks = new theDawgCommand()
   });
 
 const play = new theDawgCommand().setName("play").setAction(async (message) => {
-  // const args = message.content.split(" ")[1];
   const content = message.content.split(" ");
   content.shift();
   const args = content.join(" ");
@@ -128,6 +132,38 @@ const seek = new theDawgCommand().setName("seek").setAction(async (message) => {
   seekInterval(args);
 });
 
+const queue = new theDawgCommand()
+  .setName("queue")
+  .setAction(async (message) => {
+    if (!connectionObject.textChannel) {
+      connectionObject.textChannel = message.channel;
+    }
+    if (voiceConnectionError(message)) return;
+    showQ(message);
+  });
+
+const radio = new theDawgCommand()
+  .setName("radio")
+  .setAction(async (message) => {
+    if (!connectionObject.textChannel) {
+      connectionObject.textChannel = message.channel;
+    }
+    if (voiceConnectionError(message)) return;
+    songRadio();
+  });
+
+//select
+const select = new theDawgCommand()
+  .setName("select")
+  .setAction(async (message) => {
+    if (!connectionObject.textChannel) {
+      connectionObject.textChannel = message.channel;
+    }
+    if (voiceConnectionError(message)) return;
+    const modal = new ModalBuilder()
+      .setCustomId("myModal")
+      .setTitle("My Modal");
+  });
 module.exports = {
   topg,
   kreiks,
@@ -138,4 +174,6 @@ module.exports = {
   stop,
   search,
   seek,
+  queue,
+  radio,
 };
