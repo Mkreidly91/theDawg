@@ -1,17 +1,15 @@
 const { getAudioManager } = require("../database");
 const { seekArgsError } = require("../Errors/voiceErrors");
-const { seekInterval } = require("../voice");
+const { seekInterval } = require("../Helpers/voice.helpers");
 
 const seekService = ({ message, args }) => {
   const { guildId } = message;
-  const audioManager = getAudioManager(guildId);
 
-  const { currentSong } = audioManager;
-  const error = seekArgsError(args, currentSong);
+  const error = seekArgsError({ args, audioManager: getAudioManager(guildId) });
   if (error) {
     return { error };
   }
-  seekInterval(args, getAudioManager(guildId));
+  seekInterval({ args, audioManager: getAudioManager(guildId) });
   return { error };
 };
 

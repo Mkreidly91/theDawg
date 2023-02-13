@@ -33,10 +33,11 @@ const playArgsError = ({ textChannel, args }) => {
   return false;
 };
 
-const seekArgsError = ({ args, currentSong }) => {
+const seekArgsError = ({ args, audioManager }) => {
   let error = "";
-  const { duration } = currentSong;
 
+  const { currentSong } = audioManager;
+  const { duration } = currentSong;
   if (!currentSong) {
     error = "Nothing to seek brudda";
   }

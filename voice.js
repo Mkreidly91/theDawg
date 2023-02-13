@@ -252,7 +252,7 @@ const stopMusic = async () => {
 };
 
 //seek
-const seekInterval = async (args) => {
+const seekInterval = async ({ args, audioManager }) => {
   const { queue, currentSong, audioPlayer, textChannel } = connectionObject;
 
   const num = parseInt(args);
@@ -260,7 +260,7 @@ const seekInterval = async (args) => {
   connectionObject.isPlaying = false;
 
   queue.unshift(currentSong);
-  playSong(num);
+  playSong(num, audioManager);
 };
 
 //song radio

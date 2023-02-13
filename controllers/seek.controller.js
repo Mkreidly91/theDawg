@@ -1,4 +1,5 @@
 const theDawgError = require("../Errors/theDawgError");
+const { seekService } = require("../services");
 
 const seekController = ({ message, args }) => {
   const { channel } = message;

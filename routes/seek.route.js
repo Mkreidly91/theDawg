@@ -1,3 +1,4 @@
+const { seekController } = require("../controllers");
 const theDawgError = require("../Errors/theDawgError");
 const { voiceConnectionError } = require("../Errors/voiceErrors");
 
@@ -6,15 +7,14 @@ const seek = (message) => {
   if (voiceConnectionError(message)) return;
   const args = content.split(" ")[1];
 
-  if (!args || !parseInt(args)) {
+  if (!args || isNaN(parseInt(args))) {
     new theDawgError(
       channel,
       `Please provide a correct argument: "-seek {{number}}"`
     ).send();
     return;
   }
-
-  //call seek controller
+  seekController({ message, args });
 };
 
 module.exports = seek;

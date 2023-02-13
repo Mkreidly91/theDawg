@@ -137,7 +137,7 @@ const addToQ = async ({ args, audioManager }) => {
 
 const playSong = async ({ seek = 0, audioManager }) => {
   const { queue, audioPlayer, textChannel } = audioManager;
-
+  console.log(seek);
   if (!audioManager.isPlaying) {
     const { title, by } = queue[0];
 
@@ -184,12 +184,13 @@ const playYt = async (audioManager) => {
 };
 
 const seekInterval = async ({ args, audioManager }) => {
-  const { queue, currentSong, audioPlayer, textChannel } = audioManager;
+  console.log(audioManager);
+  const { queue, currentSong } = audioManager;
 
   audioManager.isPlaying = false;
 
   queue.unshift(currentSong);
-  playSong(args);
+  playSong({ seek: args, audioManager });
 };
 const destroyConnection = (audioManager) => {
   const { connection, audioPlayer } = audioManager;
