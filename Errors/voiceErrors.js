@@ -33,30 +33,19 @@ const playArgsError = ({ textChannel, args }) => {
   return false;
 };
 
-const seekArgsError = ({ textChannel, args, currentSong }) => {
+const seekArgsError = ({ args, currentSong }) => {
   let error = "";
-  if (!currentSong) {
-    new theDawgError(textChannel, "Nothing to seek brudda").send();
-    return true;
-  }
   const { duration } = currentSong;
 
-  if (!args) {
-    error = `Please provide an argument: "-seek {{number}}"`;
+  if (!currentSong) {
+    error = "Nothing to seek brudda";
   }
-
-  const num = parseInt(args);
-
-  if (isNaN(num)) {
-    error = `Please provide a number`;
-  } else if (num < 0) {
+  if (args < 0) {
     error = `Input must be a positive number`;
-  } else if (num > duration) {
+  } else if (args > duration) {
     error = `please provide input between 0 - ${duration} seconds`;
   }
-  if (!error) return false;
-  new theDawgError(textChannel, error).send();
-  return true;
+  return error;
 };
 
 module.exports = {

@@ -182,9 +182,18 @@ const playYt = async (audioManager) => {
     console.log(error);
   }
 };
+
+const seekInterval = async ({ args, audioManager }) => {
+  const { queue, currentSong, audioPlayer, textChannel } = audioManager;
+
+  audioManager.isPlaying = false;
+
+  queue.unshift(currentSong);
+  playSong(args);
+};
 const destroyConnection = (audioManager) => {
   const { connection, audioPlayer } = audioManager;
   connection.destroy();
   audioPlayer.removeAllListeners();
 };
-module.exports = { joinVoice, playYt, addToQ, destroyConnection };
+module.exports = { joinVoice, playYt, addToQ, destroyConnection, seekInterval };

@@ -5,10 +5,16 @@ const seek = (message) => {
   const { channel, content } = message;
   if (voiceConnectionError(message)) return;
   const args = content.split(" ")[1];
-  if (!parseInt(args)) {
-    new theDawgError(channel, "Please provide a number").send();
+
+  if (!args || !parseInt(args)) {
+    new theDawgError(
+      channel,
+      `Please provide a correct argument: "-seek {{number}}"`
+    ).send();
     return;
   }
+
+  //call seek controller
 };
 
 module.exports = seek;
