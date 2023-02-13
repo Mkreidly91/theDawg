@@ -6,6 +6,7 @@ const pastaAK = require("./pastaAK.route");
 const pause = require("./pause.route");
 const play = require("./play.route");
 const resume = require("./resume.route");
+const seek = require("./seek.route");
 const stop = require("./stop.route");
 const undeafen = require("./undeafen.route");
 const unmute = require("./unmute.route");
@@ -22,4 +23,5 @@ module.exports = {
   pause,
   resume,
   stop,
+  seek,
 };
