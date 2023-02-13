@@ -1,6 +1,7 @@
 const membersVoiceService = require("./membersVoice.service");
 const pauseService = require("./pause.service");
 const playService = require("./play.service");
+const radioService = require("./radio.service");
 const resumeService = require("./resume.service");
 const seekService = require("./seek.service");
 const skipService = require("./skip.service");
@@ -14,4 +15,5 @@ module.exports = {
   stopService,
   seekService,
   skipService,
+  radioService,
 };

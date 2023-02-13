@@ -195,4 +195,26 @@ const destroyConnection = (audioManager) => {
   connection.destroy();
   audioPlayer.removeAllListeners();
 };
-module.exports = { joinVoice, playYt, addToQ, destroyConnection, seekInterval };
+const radio = async (audioManager) => {
+  const { currentSong, queue } = audioManager;
+  const { relatedVideos } = currentSong;
+  audioManager.queue = [];
+  queue.unshift(currentSong);
+  const addedResponse = [];
+
+  for (const args of relatedVideos) {
+    const addedVideo = await addToQ({ args, audioManager });
+    addedResponse.push(addedVideo);
+  }
+
+  console.log(addedResponse);
+  return addedResponse;
+};
+module.exports = {
+  joinVoice,
+  playYt,
+  addToQ,
+  destroyConnection,
+  seekInterval,
+  radio,
+};
