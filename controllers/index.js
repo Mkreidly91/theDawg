@@ -6,10 +6,10 @@ const pastaAKController = require("./pastaAK.controller");
 const pauseController = require("./pause.controller");
 const playController = require("./play.controller");
 const resumeController = require("./resume.controller");
+const seekController = require("./seek.controller");
 const stopController = require("./stop.controller");
 const undeafenController = require("./undeafen.controller");
 const unmuteController = require("./unmute.controller");
-
 module.exports = {
   muteController,
   unmuteController,
@@ -22,4 +22,5 @@ module.exports = {
   pauseController,
   resumeController,
   stopController,
+  seekController,
 };
