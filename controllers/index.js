@@ -5,6 +5,7 @@ const nukeController = require("./nuke.controller");
 const pastaAKController = require("./pastaAK.controller");
 const pauseController = require("./pause.controller");
 const playController = require("./play.controller");
+const radioController = require("./radio.controller");
 const resumeController = require("./resume.controller");
 const seekController = require("./seek.controller");
 const skipController = require("./skip.controller");
@@ -25,4 +26,5 @@ module.exports = {
   stopController,
   seekController,
   skipController,
+  radioController,
 };
