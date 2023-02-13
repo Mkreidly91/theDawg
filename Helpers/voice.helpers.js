@@ -56,11 +56,10 @@ const joinVoice = ({ message, audioManager }) => {
       );
 
       //disconnect after 5 seconds of idle
-      audioPlayer.once(AudioPlayerStatus.Idle, () => {
+      audioManager.audioPlayer.once(AudioPlayerStatus.Idle, () => {
         if (audioManager.queue.length === 0) {
           setTimeout(() => {
-            des;
-            destroyConnection();
+            destroyConnection(audioManager);
           }, 5000);
         }
       });
@@ -137,7 +136,7 @@ const addToQ = async ({ args, audioManager }) => {
 
 const playSong = async ({ seek = 0, audioManager }) => {
   const { queue, audioPlayer, textChannel } = audioManager;
-  console.log(seek);
+
   if (!audioManager.isPlaying) {
     const { title, by } = queue[0];
 
@@ -184,7 +183,6 @@ const playYt = async (audioManager) => {
 };
 
 const seekInterval = async ({ args, audioManager }) => {
-  console.log(audioManager);
   const { queue, currentSong } = audioManager;
 
   audioManager.isPlaying = false;

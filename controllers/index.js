@@ -7,6 +7,7 @@ const pauseController = require("./pause.controller");
 const playController = require("./play.controller");
 const resumeController = require("./resume.controller");
 const seekController = require("./seek.controller");
+const skipController = require("./skip.controller");
 const stopController = require("./stop.controller");
 const undeafenController = require("./undeafen.controller");
 const unmuteController = require("./unmute.controller");
@@ -23,4 +24,5 @@ module.exports = {
   resumeController,
   stopController,
   seekController,
+  skipController,
 };
