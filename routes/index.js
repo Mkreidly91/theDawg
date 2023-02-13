@@ -5,6 +5,7 @@ const nuke = require("./nuke.route");
 const pastaAK = require("./pastaAK.route");
 const pause = require("./pause.route");
 const play = require("./play.route");
+const radio = require("./radio.route");
 const resume = require("./resume.route");
 const seek = require("./seek.route");
 const skip = require("./skip.route");
@@ -26,4 +27,5 @@ module.exports = {
   stop,
   skip,
   seek,
+  radio,
 };
