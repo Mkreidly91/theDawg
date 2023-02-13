@@ -190,11 +190,13 @@ const seekInterval = async ({ args, audioManager }) => {
   queue.unshift(currentSong);
   playSong({ seek: args, audioManager });
 };
+
 const destroyConnection = (audioManager) => {
   const { connection, audioPlayer } = audioManager;
   connection.destroy();
   audioPlayer.removeAllListeners();
 };
+
 const radio = async (audioManager) => {
   const { currentSong, queue } = audioManager;
   const { relatedVideos } = currentSong;
@@ -207,7 +209,6 @@ const radio = async (audioManager) => {
     addedResponse.push(addedVideo);
   }
 
-  console.log(addedResponse);
   return addedResponse;
 };
 module.exports = {
