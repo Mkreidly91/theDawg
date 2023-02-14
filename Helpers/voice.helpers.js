@@ -6,6 +6,7 @@ const {
   NoSubscriberBehavior,
   getVoiceConnection,
 } = require("@discordjs/voice");
+const { bold } = require("discord.js");
 
 const play = require("play-dl");
 
@@ -116,7 +117,9 @@ const addToQ = async ({ args, audioManager }) => {
           duration: durationInSec,
         });
       });
-      return `Playlist: "${title}" by ${channel.name} was added to queue`;
+      return `Playlist: "${bold(title)}" by ${bold(
+        channel.name
+      )} was added to queue`;
     } else {
       const { title, channel, url, durationInSec } = info.video_details;
 
@@ -127,7 +130,7 @@ const addToQ = async ({ args, audioManager }) => {
         relatedVideos: info.related_videos,
         duration: durationInSec,
       });
-      return `${title} by ${channel.name} was added to queue`;
+      return `${bold(title)} by ${bold(channel.name)} was added to queue`;
     }
   } catch (error) {
     console.log(error);
@@ -154,7 +157,9 @@ const playSong = async ({ seek = 0, audioManager }) => {
 
     if (seek === 0) {
       await textChannel.send(
-        `:musical_note: Now playing ${title} by ${by} :musical_note:`
+        `:musical_note: Now playing ${bold(title)} by ${bold(
+          by
+        )} :musical_note:`
       );
     }
 
@@ -211,6 +216,20 @@ const radio = async (audioManager) => {
 
   return addedResponse;
 };
+
+const showQ = (audioManager) => {
+  const { currentSong, queue } = audioManager;
+  const { title, by } = currentSong;
+  if (queue.length === 0 && !currentSong) return `queue is empty`;
+  const queueSongs = queue
+    .map((song, index) => {
+      const { title, by } = song;
+      return `${index + 2}:  ${bold(title)} by ${bold(by)}`;
+    })
+    .join("\n");
+
+  return `1:  ${bold(title)} by ${bold(by)}\n${queueSongs}`;
+};
 module.exports = {
   joinVoice,
   playYt,
@@ -218,4 +237,5 @@ module.exports = {
   destroyConnection,
   seekInterval,
   radio,
+  showQ,
 };
