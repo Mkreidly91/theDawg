@@ -1,5 +1,6 @@
 const deafenController = require("./deafen.controller");
 const khallisneController = require("./khallisne.controller");
+const lyricsController = require("./lyrics.controller");
 const muteController = require("./mute.controller");
 const nukeController = require("./nuke.controller");
 const pastaAKController = require("./pastaAK.controller");
@@ -29,4 +30,5 @@ module.exports = {
   skipController,
   radioController,
   queueController,
+  lyricsController,
 };

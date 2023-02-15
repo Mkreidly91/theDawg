@@ -1,5 +1,6 @@
 const deafen = require("./deafen.route");
 const khallisne = require("./khallisne.route");
+const lyrics = require("./lyrics.route");
 const mute = require("./mute.route");
 const nuke = require("./nuke.route");
 const pastaAK = require("./pastaAK.route");
@@ -29,4 +30,5 @@ module.exports = {
   seek,
   radio,
   queue,
+  lyrics,
 };

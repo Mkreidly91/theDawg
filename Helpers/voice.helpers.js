@@ -79,6 +79,7 @@ const searchSong = async (args) => {
     const searched = await play.search(args, {
       source: { youtube: "video" },
     });
+    console.log(searched);
     const info = await play.video_info(searched[0].url);
     return { info, type: "search" };
   } else if (validate === "video") {

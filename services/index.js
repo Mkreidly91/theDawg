@@ -1,3 +1,4 @@
+const lyricsService = require("./lyrics.service");
 const membersVoiceService = require("./membersVoice.service");
 const pauseService = require("./pause.service");
 const playService = require("./play.service");
@@ -17,4 +18,5 @@ module.exports = {
   skipService,
   radioService,
   queueService,
+  lyricsService,
 };
