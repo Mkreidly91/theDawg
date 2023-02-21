@@ -9,6 +9,7 @@ const {
 const { bold } = require("discord.js");
 
 const play = require("play-dl");
+const { getBestSong } = require("./search.helpers");
 
 const joinVoice = ({ message, audioManager }) => {
   const {
@@ -79,8 +80,11 @@ const searchSong = async (args) => {
     const searched = await play.search(args, {
       source: { youtube: "video" },
     });
-    console.log(searched);
-    const info = await play.video_info(searched[0].url);
+
+    // try filtering the search result to favor official artists
+    const bestResult = getBestSong(searched);
+    const info = await play.video_info(bestResult.url);
+
     return { info, type: "search" };
   } else if (validate === "video") {
     const info = await play.video_info(args);

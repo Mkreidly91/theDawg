@@ -9,7 +9,19 @@ const lyricsController = async (message) => {
     new theDawgError(channel, error).send();
     return;
   }
-  await channel.send(response);
+  const { fullTitle, lyrics } = response;
+  if (lyrics) {
+    if (Array.isArray(lyrics)) {
+      await channel.send(`${fullTitle}:\n\n`);
+      for (const section of lyrics) {
+        await channel.send(section);
+      }
+      return;
+    }
+    await channel.send(`${fullTitle}:\n\n${lyrics}`);
+  } else {
+    await channel.send(response);
+  }
 };
 
 module.exports = lyricsController;

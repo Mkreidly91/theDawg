@@ -1,6 +1,7 @@
 const { bold } = require("discord.js");
 const { getAudioManager } = require("../database");
 const geniusClient = require("../Genius");
+const { getBestLyrics } = require("../Helpers/search.helpers");
 
 const lyricsService = async (message) => {
   try {
@@ -15,29 +16,9 @@ const lyricsService = async (message) => {
     const { title: songTitle, by } = currentSong;
     const searchResults = await geniusClient.songs.search(songTitle);
 
-    const bestResult = searchResults.find((song) => {
-      const {
-        title,
-        fullTitle,
-        artist: { name },
-      } = song;
-      const titleRegx = new RegExp(songTitle.toLowerCase());
-      const artistRegx = new RegExp(by.split(" ")[0].toLowerCase());
+    const bestResult = getBestLyrics(searchResults, currentSong);
 
-      if (
-        title.toLowerCase().match(titleRegx) ||
-        name.toLowerCase().match(artistRegx)
-      ) {
-        return song;
-      } else if (
-        title.toLowerCase().includes(songTitle.toLowerCase()) ||
-        name.toLowerCase().includes(by.split(" ")[0].toLowerCase())
-      ) {
-        return song;
-      }
-    });
-
-    if (!searchResults || !bestResult) {
+    if (!searchResults[0] || !bestResult) {
       return { response: "no results found" };
     }
 
@@ -49,7 +30,22 @@ const lyricsService = async (message) => {
     try {
       const { fullTitle } = bestResult;
       const lyrics = await bestResult.lyrics();
-      return { response: `${bold(fullTitle)}:\n\n\n${lyrics}` };
+      if (lyrics.length > 2000) {
+        let lyricsArr = [];
+        let start = 0;
+        let end = 2000;
+        while (end < lyrics.length - 1) {
+          console.log(start, end);
+          const substr = lyrics.substring(start, end);
+          lyricsArr.push(substr);
+          start = end;
+          end =
+            end + 2000 > lyrics.length ? lyrics.length - 1 - end : end + 2000;
+        }
+
+        return { response: { fullTitle: bold(fullTitle), lyrics: lyricsArr } };
+      }
+      return { response: { fullTitle: bold(fullTitle), lyrics } };
     } catch (error) {
       return { error: "No result was found" };
     }
