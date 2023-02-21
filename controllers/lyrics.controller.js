@@ -1,9 +1,9 @@
 const theDawgError = require("../Errors/theDawgError");
 const { lyricsService } = require("../services");
 
-const lyricsController = async (message) => {
+const lyricsController = async ({ message, args }) => {
   const { channel } = message;
-  const { response, error } = await lyricsService(message);
+  const { response, error } = await lyricsService({ message, args });
 
   if (error) {
     new theDawgError(channel, error).send();

@@ -243,4 +243,5 @@ module.exports = {
   seekInterval,
   radio,
   showQ,
+  searchSong,
 };
