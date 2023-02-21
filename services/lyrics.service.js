@@ -49,18 +49,12 @@ const lyricsService = async ({ message, args }) => {
       const { fullTitle } = bestResult;
       const lyrics = await bestResult.lyrics();
       if (lyrics.length > 2000) {
+        console.log(lyrics.length);
         let lyricsArr = [];
-        let start = 0;
-        let end = 2000;
-        while (end < lyrics.length - 1) {
-          console.log(start, end);
-          const substr = lyrics.substring(start, end);
-          lyricsArr.push(substr);
-          start = end;
-          end =
-            end + 2000 > lyrics.length ? lyrics.length - 1 - end : end + 2000;
-        }
 
+        for (let i = 0; i < lyrics.length; i += 2000) {
+          lyricsArr.push(lyrics.substring(i, i + 2000));
+        }
         return { response: { fullTitle: bold(fullTitle), lyrics: lyricsArr } };
       }
       return { response: { fullTitle: bold(fullTitle), lyrics } };
