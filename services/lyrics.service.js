@@ -31,6 +31,7 @@ const lyricsService = async ({ message, args }) => {
         };
       }
     }
+    console.log(targetSong);
     const { title: songTitle, by } = targetSong;
     const searchResults = await geniusClient.songs.search(songTitle);
 

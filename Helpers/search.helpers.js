@@ -56,7 +56,7 @@ const getBestLyrics = (results, currentSong) => {
   if (bestMatch[0]) {
     return bestMatch[0];
   } else {
-    return results[0];
+    return null;
   }
 };
 module.exports = { getBestSong, getBestLyrics };
