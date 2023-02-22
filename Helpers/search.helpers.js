@@ -1,3 +1,5 @@
+const Fuse = require("fuse.js");
+
 const getBestSong = (results) => {
   if (results.length === 1) {
     return results[0];
@@ -21,40 +23,70 @@ const getBestSong = (results) => {
   }
 };
 
-const getBestLyrics = (results, currentSong) => {
-  let { title, by } = currentSong;
-  title = title.toLowerCase();
-  by = by.toLowerCase();
+const getBestLyrics = (results, targetSong) => {
+  let { title, by } = targetSong;
+  const options = {
+    includeScore: true,
 
-  const joinedTitle = title.split(" ").join("");
-  const joinedBy = by.split(" ").join("");
+    keys: ["fullTitle", "title", "artist.name"],
+    ignoreLocation: false,
+  };
 
-  const titleRegx = new RegExp(`${title}|${joinedTitle}`, "g");
-  const artistRegx = new RegExp(`${by.split(" ")[0]}|${joinedBy}`, "g");
+  const fuse = new Fuse(results, options);
+  const query = {
+    $and: [
+      {
+        $path: "artist.name",
+        $val: by,
+      },
+      {
+        title: title,
+      },
+      {
+        fullTitle: `${title} ${by}`,
+      },
+    ],
+  };
 
-  if (results.length === 1) {
-    return results[0];
+  let fuseResults = fuse.search(query);
+
+  if (fuseResults.length === 0) {
+    fuseResults = fuse.search(`${title} ${by}`);
   }
-  const bestMatch = results.filter((song) => {
-    let {
-      artist: { name },
-      title,
-      fullTitle,
-    } = song;
-    name = name.toLowerCase();
-    title = title.toLowerCase();
-    fullTitle = fullTitle.toLowerCase();
-    const match =
-      (name.match(artistRegx) && title.match(titleRegx)) ||
-      (fullTitle.match(artistRegx) && fullTitle.match(titleRegx));
 
-    if (match) {
-      return song;
-    }
-  });
+  // title = title.toLowerCase();
+  // by = by.toLowerCase();
+  // by = by.includes("-") ? by.split("-") : by.split(" ");
+  // const joinedTitle = title.split(" ").join("");
+  // const joinedBy = by.join("");
 
-  if (bestMatch[0]) {
-    return bestMatch[0];
+  // const titleRegx = new RegExp(`${title}|${joinedTitle}`, "g");
+  // const artistRegx = new RegExp(`${by[0]}|${joinedBy}`, "g");
+
+  // if (results.length === 1) {
+  //   return results[0];
+  // }
+  // const bestMatch = results.filter((song) => {
+  //   let {
+  //     artist: { name },
+  //     title,
+  //     fullTitle,
+  //   } = song;
+  //   name = name.toLowerCase();
+  //   title = title.toLowerCase();
+  //   fullTitle = fullTitle.toLowerCase();
+  //   const match =
+  //     (name.match(artistRegx) && title.match(titleRegx)) ||
+  //     (fullTitle.match(artistRegx) && fullTitle.match(titleRegx));
+
+  //   if (match) {
+  //     return song;
+  //   }
+  // });
+  console.log(targetSong, results, fuseResults);
+  if (fuseResults[0]) {
+    const { refIndex } = fuseResults[0];
+    return results[refIndex];
   } else {
     return null;
   }

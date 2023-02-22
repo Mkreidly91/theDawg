@@ -31,7 +31,7 @@ const lyricsService = async ({ message, args }) => {
         };
       }
     }
-    console.log(targetSong);
+
     const { title: songTitle, by } = targetSong;
     const searchResults = await geniusClient.songs.search(songTitle);
 
@@ -50,7 +50,6 @@ const lyricsService = async ({ message, args }) => {
       const { fullTitle } = bestResult;
       const lyrics = await bestResult.lyrics();
       if (lyrics.length > 2000) {
-        console.log(lyrics.length);
         let lyricsArr = [];
 
         for (let i = 0; i < lyrics.length; i += 2000) {
@@ -60,6 +59,7 @@ const lyricsService = async ({ message, args }) => {
       }
       return { response: { fullTitle: bold(fullTitle), lyrics } };
     } catch (error) {
+      console.log(error);
       return { error: "No result was found" };
     }
   } catch (error) {
