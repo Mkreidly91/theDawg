@@ -29,14 +29,14 @@ const channelController = (message) => {
     }
   }
 };
-const routeManager = (message) => {
+const routeManager = (message, client) => {
   const { content, member } = message;
   if (!message.author.bot && !message.channel.isDMBased()) {
     if (content.trim().startsWith(PREFIX)) {
       if (isAdmin(member)) {
         const command = content.substring(1).split(" ")[0];
         routes[command]
-          ? routes[command](message)
+          ? routes[command](message, client)
           : new theDawgError(message.channel, "Invalid Command").send();
       } else {
         new theDawgError(

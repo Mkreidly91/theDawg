@@ -9,7 +9,6 @@ const {
   VoiceChannel,
 } = require("discord.js");
 
-const { joinVoice } = require("./voice.js");
 const {
   Guilds,
   GuildMessages,
@@ -82,12 +81,13 @@ client.once(Events.ClientReady, (c) => {
 
 client.on(Events.MessageCreate, async (message) => {
   const { content, member } = message;
+
   if (!message.author.bot && message.channel.isDMBased()) {
     message.channel.send("shu baddak");
   }
   try {
     //channelController(message);
-    routeManager(message);
+    routeManager(message, client);
   } catch (error) {
     console.log(error);
   }

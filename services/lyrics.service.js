@@ -6,7 +6,7 @@ const { searchSong } = require("../Helpers/voice.helpers");
 
 const lyricsService = async ({ message, args }) => {
   try {
-    const { guildId } = message;
+    const { guildId, channel } = message;
     const audioManager = getAudioManager(guildId);
     const { audioPlayer, currentSong } = audioManager;
     let targetSong;
@@ -14,6 +14,11 @@ const lyricsService = async ({ message, args }) => {
       if (!audioPlayer) {
         return { error: "No audio player connected" };
       }
+
+      if (!currentSong) {
+        return { error: "No song currently playing" };
+      }
+
       targetSong = currentSong;
     } else {
       const { info, type } = await searchSong(args);
@@ -34,34 +39,11 @@ const lyricsService = async ({ message, args }) => {
 
     const { title: songTitle, by } = targetSong;
     const searchResults = await geniusClient.songs.search(songTitle);
-
-    const bestResult = getBestLyrics(searchResults, targetSong);
-
-    if (!searchResults[0] || !bestResult) {
-      return { response: "no results found" };
+    if (!searchResults[0]) {
+      return { response: "No results found" };
     }
 
-    if (bestResult?.instrumental) {
-      const { fullTitle } = bestResult;
-      return { response: `${fullTitle} is an instrumental` };
-    }
-
-    try {
-      const { fullTitle } = bestResult;
-      const lyrics = await bestResult.lyrics();
-      if (lyrics.length > 2000) {
-        let lyricsArr = [];
-
-        for (let i = 0; i < lyrics.length; i += 2000) {
-          lyricsArr.push(lyrics.substring(i, i + 2000));
-        }
-        return { response: { fullTitle: bold(fullTitle), lyrics: lyricsArr } };
-      }
-      return { response: { fullTitle: bold(fullTitle), lyrics } };
-    } catch (error) {
-      console.log(error);
-      return { error: "No result was found" };
-    }
+    return { response: searchResults };
   } catch (error) {
     console.log(error);
   }
