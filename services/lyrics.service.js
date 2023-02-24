@@ -42,7 +42,6 @@ const lyricsService = async ({ message, args }) => {
     if (!searchResults[0]) {
       return { response: "No results found" };
     }
-
     return { response: searchResults };
   } catch (error) {
     console.log(error);
