@@ -6,6 +6,7 @@ const {
   NoSubscriberBehavior,
   getVoiceConnection,
   VoiceConnection,
+  VoiceConnectionStatus,
 } = require("@discordjs/voice");
 const { bold } = require("discord.js");
 
@@ -68,9 +69,15 @@ const joinVoice = ({ message, audioManager }) => {
           }, 5000);
         }
       });
-      audioManager.connection.on("stateChange", (oldstate, newstate) => {
-        console.log(typeof guildId);
-        console.log(oldstate.status, newstate.status);
+      //Solution for random 1min connection disconnect caused by an update on Discord's side
+      audioManager.connection.on("stateChange", (old_state, new_state) => {
+        if (
+          old_state.status === VoiceConnectionStatus.Ready &&
+          new_state.status === VoiceConnectionStatus.Connecting
+        ) {
+          console.log(old_state, new_state);
+          audioManager.connection.configureNetworking();
+        }
       });
     }
 

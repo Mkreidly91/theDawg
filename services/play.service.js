@@ -12,10 +12,6 @@ const playService = async ({ message, args, song }) => {
   } = message;
 
   try {
-    const audioManager = joinVoice({
-      message,
-      audioManager: getOrCreate(guildId),
-    });
     const { addedResponse, error } = await addToQ({
       args,
       audioManager: getAudioManager(guildId),
@@ -24,7 +20,10 @@ const playService = async ({ message, args, song }) => {
     if (error) {
       return { error: `Oops,something went wrong, try -search ${args}` };
     }
-
+    const audioManager = joinVoice({
+      message,
+      audioManager: getOrCreate(guildId),
+    });
     playYt(getAudioManager(guildId));
 
     return { addedResponse };
