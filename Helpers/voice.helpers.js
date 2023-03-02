@@ -5,10 +5,12 @@ const {
   AudioPlayerStatus,
   NoSubscriberBehavior,
   getVoiceConnection,
+  VoiceConnection,
 } = require("@discordjs/voice");
 const { bold } = require("discord.js");
 
 const play = require("play-dl");
+const { resetState } = require("../database");
 const { getBestSong } = require("./search.helpers");
 
 const joinVoice = ({ message, audioManager }) => {
@@ -62,8 +64,13 @@ const joinVoice = ({ message, audioManager }) => {
         if (audioManager.queue.length === 0) {
           setTimeout(() => {
             destroyConnection(audioManager);
+            resetState(guildId);
           }, 5000);
         }
+      });
+      audioManager.connection.on("stateChange", (oldstate, newstate) => {
+        console.log(typeof guildId);
+        console.log(oldstate.status, newstate.status);
       });
     }
 
@@ -74,7 +81,7 @@ const joinVoice = ({ message, audioManager }) => {
 };
 
 //Implementing Search
-const searchSong = async (args) => {
+const searchSong = async (args, getAllResults = false) => {
   const validate = await play.yt_validate(args);
   if (validate === "search") {
     const searched = await play.search(args, {
@@ -82,10 +89,23 @@ const searchSong = async (args) => {
     });
 
     // try filtering the search result to favor official artists
-    const bestResult = getBestSong(searched);
-    const info = await play.video_info(bestResult.url);
-
-    return { info, type: "search" };
+    if (!getAllResults) {
+      const bestResult = getBestSong(searched);
+      try {
+        const info = await play.video_info(bestResult.url);
+        return { info, type: "search" };
+      } catch (error) {
+        return { error };
+      }
+    } else {
+      const videos = await Promise.allSettled(
+        searched.map(async (song) => {
+          const songInfo = await play.video_info(song.url);
+          return songInfo;
+        })
+      );
+      return { info: videos };
+    }
   } else if (validate === "video") {
     const info = await play.video_info(args);
     return { info, type: "video" };
@@ -102,11 +122,21 @@ const searchSong = async (args) => {
   }
 };
 
-const addToQ = async ({ args, audioManager }) => {
+const addToQ = async ({ args, audioManager, song }) => {
   let { queue } = audioManager;
 
   try {
-    const { info, type } = await searchSong(args);
+    if (song) {
+      const { title, by } = song;
+      queue.push(song);
+      return {
+        addedResponse: `${bold(title)} by ${bold(by)} was added to queue`,
+      };
+    }
+    const { info, type, error } = await searchSong(args);
+    if (error) {
+      return { error };
+    }
     if (type === "playlist") {
       const [playlistInfo, videos] = info;
       const { title, channel } = playlistInfo;
@@ -122,9 +152,11 @@ const addToQ = async ({ args, audioManager }) => {
           duration: durationInSec,
         });
       });
-      return `Playlist: "${bold(title)}" by ${bold(
-        channel.name
-      )} was added to queue`;
+      return {
+        addedResponse: `Playlist: "${bold(title)}" by ${bold(
+          channel.name
+        )} was added to queue`,
+      };
     } else {
       const { title, channel, url, durationInSec } = info.video_details;
 
@@ -135,7 +167,12 @@ const addToQ = async ({ args, audioManager }) => {
         relatedVideos: info.related_videos,
         duration: durationInSec,
       });
-      return `${bold(title)} by ${bold(channel.name)} was added to queue`;
+
+      return {
+        addedResponse: `${bold(title)} by ${bold(
+          channel.name
+        )} was added to queue`,
+      };
     }
   } catch (error) {
     console.log(error);
@@ -151,14 +188,21 @@ const playSong = async ({ seek = 0, audioManager }) => {
     //keeping track of last played song
     audioManager.currentSong = queue[0];
     const audio = await play.stream(queue[0].url, {
-      discordPlayerCompatibility: false,
+      discordPlayerCompatibility: true,
       seek,
     });
 
-    const resource = createAudioResource(audio.stream, {
-      inlineVolume: false,
-      inputType: audio.type,
-    });
+    // const resource = createAudioResource(audio.stream, {
+    //   inlineVolume: false,
+    //   inputType: audio.type,
+    // });
+    const resource = createAudioResource(
+      "/Users/mostafa/Desktop/Discord-Bot/Resources/Oddling.mp3",
+      {
+        inlineVolume: false,
+        inputType: audio.type,
+      }
+    );
 
     if (seek === 0) {
       await textChannel.send(
@@ -177,12 +221,14 @@ const playSong = async ({ seek = 0, audioManager }) => {
     audioManager.isPlaying = false;
     if (queue.length !== 0) playSong({ audioManager });
   });
+
+  audioPlayer.on(AudioPlayerStatus.AutoPaused, (status) => {
+    // console.log(audioPlayer, audioManager);
+  });
 };
 
 const playYt = async (audioManager) => {
   try {
-    //add song to queue
-
     if (audioManager.isPlaying) return;
     else {
       playSong({ audioManager });

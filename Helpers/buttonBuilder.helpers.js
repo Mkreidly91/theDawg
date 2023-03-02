@@ -1,26 +1,65 @@
 const { ActionRowBuilder, ButtonBuilder } = require("@discordjs/builders");
+const { enIE, ka } = require("date-fns/locale");
 const { ButtonStyle } = require("discord.js");
 
-const resultsToRowOfButtons = (results) => {
-  const row = new ActionRowBuilder();
+const resultsToRowOfButtons = ({ results, lyrics, songs }) => {
+  let objects;
+  if (results.length > 25) {
+    objects = results.slice(0, 25);
+  } else {
+    objects = results;
+  }
 
-  results.forEach((song) => {
-    const { fullTitle } = song;
+  const rows = createRowsForButtons(objects.length);
 
-    if (fullTitle.length >= 80) {
-      label = `${fullTitle.substring(0, 77)}...`;
-    } else {
-      label = fullTitle;
+  try {
+    if (lyrics) {
+      let i = 0;
+      objects.forEach((song, index) => {
+        const { fullTitle, id } = song;
+        const button = new ButtonBuilder()
+          .setCustomId(`${id}`)
+          .setLabel(
+            fullTitle.length > 80
+              ? `${fullTitle.substring(0, 77)}...`
+              : fullTitle
+          )
+          .setStyle(ButtonStyle.Primary);
+        if (index !== 0 && index % 5 === 0) i++;
+        rows[i].addComponents(button);
+      });
+    } else if (songs) {
+      let i = 0;
+      objects.forEach((song, index) => {
+        const { title, by, id } = song;
+        const fullTitle = `${title} by ${by}`;
+        const button = new ButtonBuilder()
+          .setCustomId(`${id}`)
+          .setLabel(
+            fullTitle.length > 80
+              ? `${fullTitle.substring(0, 77)}...`
+              : fullTitle
+          )
+          .setStyle(ButtonStyle.Primary);
+
+        if (index !== 0 && index % 5 === 0) i++;
+        rows[i].addComponents(button);
+      });
     }
 
-    const button = new ButtonBuilder()
-      .setCustomId(fullTitle)
-      .setLabel(label)
-      .setStyle(ButtonStyle.Primary);
-
-    row.addComponents(button);
-  });
-  return row;
+    return rows;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
+const createRowsForButtons = (num) => {
+  const numberOfRows = Math.ceil(num / 5);
+  let rows = [];
+  for (let i = 0; i < numberOfRows; i++) {
+    rows.push(new ActionRowBuilder());
+  }
+
+  return rows;
+};
 module.exports = { resultsToRowOfButtons };

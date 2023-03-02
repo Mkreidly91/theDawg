@@ -83,7 +83,7 @@ const getBestLyrics = (results, targetSong) => {
   //     return song;
   //   }
   // });
-  console.log(targetSong, results, fuseResults);
+
   if (fuseResults[0]) {
     const { refIndex } = fuseResults[0];
     return results[refIndex];

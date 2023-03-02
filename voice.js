@@ -9,7 +9,7 @@ const {
 } = require("@discordjs/voice");
 
 const fs = require("fs");
-const ytdl = require("ytdl-core");
+// const ytdl = require("ytdl-core");
 const theDawgError = require("./Errors/theDawgError");
 const { seekArgsError, audioPlayerError } = require("./Errors/voiceErrors");
 

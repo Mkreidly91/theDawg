@@ -1,10 +1,6 @@
 const theDawgError = require("../Errors/theDawgError");
 const { lyricsService } = require("../services");
-const {
-  ActionRowBuilder,
-  ButtonBuilder,
-  bold,
-} = require("@discordjs/builders");
+const { bold } = require("@discordjs/builders");
 const { Events, ButtonStyle } = require("discord.js");
 const { resultsToRowOfButtons } = require("../Helpers/buttonBuilder.helpers");
 
@@ -18,11 +14,11 @@ const lyricsController = async ({ message, args, client }) => {
   }
   //New Code
   if (Array.isArray(response)) {
-    const row = resultsToRowOfButtons(response);
+    const rows = resultsToRowOfButtons({ results: response, lyrics: true });
 
     const buttonsMessage = await channel.send({
       content: `${bold("Choose lyrics:")}`,
-      components: [row],
+      components: [...rows],
     });
 
     client.once(Events.InteractionCreate, async (interaction) => {
@@ -30,7 +26,10 @@ const lyricsController = async ({ message, args, client }) => {
       if (!interaction.isButton()) return;
       await interaction.deferReply();
       const { customId } = interaction;
-      const selectedSong = response.find((song) => song.fullTitle === customId);
+      const selectedSong = response.find((song) => {
+        const { id } = song;
+        return String(id) === customId;
+      });
       if (selectedSong) {
         if (selectedSong?.instrumental) {
           const { fullTitle } = selectedSong;

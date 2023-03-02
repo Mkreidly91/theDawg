@@ -9,6 +9,7 @@ const play = require("./play.route");
 const queue = require("./queue.route");
 const radio = require("./radio.route");
 const resume = require("./resume.route");
+const search = require("./search.route");
 const seek = require("./seek.route");
 const skip = require("./skip.route");
 const stop = require("./stop.route");
@@ -31,4 +32,5 @@ module.exports = {
   radio,
   queue,
   lyrics,
+  search,
 };

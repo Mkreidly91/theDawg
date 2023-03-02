@@ -18,14 +18,13 @@ const lyricsService = async ({ message, args }) => {
       if (!currentSong) {
         return { error: "No song currently playing" };
       }
-
       targetSong = currentSong;
     } else {
       const { info, type } = await searchSong(args);
       if (type === "playlist") {
         return { error: "Invalid Argument: cannot search for playlists" };
       } else {
-        const { title, channel, url, durationInSec } = info.video_details;
+        const { title, channel, url, durationInSec, id } = info.video_details;
 
         targetSong = {
           title,
@@ -33,6 +32,7 @@ const lyricsService = async ({ message, args }) => {
           url,
           relatedVideos: info.related_videos,
           duration: durationInSec,
+          id,
         };
       }
     }

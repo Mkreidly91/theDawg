@@ -9,11 +9,13 @@ const playController = require("./play.controller");
 const queueController = require("./queue.controller");
 const radioController = require("./radio.controller");
 const resumeController = require("./resume.controller");
+const searchController = require("./search.controller");
 const seekController = require("./seek.controller");
 const skipController = require("./skip.controller");
 const stopController = require("./stop.controller");
 const undeafenController = require("./undeafen.controller");
 const unmuteController = require("./unmute.controller");
+
 module.exports = {
   muteController,
   unmuteController,
@@ -31,4 +33,5 @@ module.exports = {
   radioController,
   queueController,
   lyricsController,
+  searchController,
 };
