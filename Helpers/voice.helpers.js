@@ -192,17 +192,10 @@ const playSong = async ({ seek = 0, audioManager }) => {
       seek,
     });
 
-    // const resource = createAudioResource(audio.stream, {
-    //   inlineVolume: false,
-    //   inputType: audio.type,
-    // });
-    const resource = createAudioResource(
-      "/Users/mostafa/Desktop/Discord-Bot/Resources/Oddling.mp3",
-      {
-        inlineVolume: false,
-        inputType: audio.type,
-      }
-    );
+    const resource = createAudioResource(audio.stream, {
+      inlineVolume: false,
+      inputType: audio.type,
+    });
 
     if (seek === 0) {
       await textChannel.send(
