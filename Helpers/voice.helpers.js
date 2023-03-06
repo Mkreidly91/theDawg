@@ -75,7 +75,6 @@ const joinVoice = ({ message, audioManager }) => {
           old_state.status === VoiceConnectionStatus.Ready &&
           new_state.status === VoiceConnectionStatus.Connecting
         ) {
-          console.log(old_state, new_state);
           audioManager.connection.configureNetworking();
         }
       });
@@ -221,10 +220,6 @@ const playSong = async ({ seek = 0, audioManager }) => {
     audioManager.isPlaying = false;
     if (queue.length !== 0) playSong({ audioManager });
   });
-
-  audioPlayer.on(AudioPlayerStatus.AutoPaused, (status) => {
-    // console.log(audioPlayer, audioManager);
-  });
 };
 
 const playYt = async (audioManager) => {
@@ -261,7 +256,7 @@ const radio = async (audioManager) => {
   const addedResponse = [];
 
   for (const args of relatedVideos) {
-    const addedVideo = await addToQ({ args, audioManager });
+    const { addedResponse: addedVideo } = await addToQ({ args, audioManager });
     addedResponse.push(addedVideo);
   }
 
