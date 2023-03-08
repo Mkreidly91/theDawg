@@ -12,6 +12,7 @@ const { bold } = require("discord.js");
 
 const play = require("play-dl");
 const { resetState } = require("../database");
+const { nowPlayingEmbed } = require("./embeds.helpers");
 const { getBestSong } = require("./search.helpers");
 
 const joinVoice = ({ message, audioManager }) => {
@@ -98,7 +99,7 @@ const searchSong = async (args, getAllResults = false) => {
     if (!getAllResults) {
       const bestResult = getBestSong(searched);
       try {
-        const info = await play.video_info(bestResult.url);
+        const info = await play.video_basic_info(bestResult.url);
         return { info, type: "search" };
       } catch (error) {
         return { error };
@@ -106,20 +107,20 @@ const searchSong = async (args, getAllResults = false) => {
     } else {
       const videos = await Promise.allSettled(
         searched.map(async (song) => {
-          const songInfo = await play.video_info(song.url);
+          const songInfo = await play.video_basic_info(song.url);
           return songInfo;
         })
       );
       return { info: videos };
     }
   } else if (validate === "video") {
-    const info = await play.video_info(args);
+    const info = await play.video_basic_info(args);
     return { info, type: "video" };
   } else if (validate === "playlist") {
     const playlistInfo = await play.playlist_info(args);
     const videos = await Promise.allSettled(
       playlistInfo.videos.map(async (video) => {
-        const videoInfo = await play.video_info(video.url);
+        const videoInfo = await play.video_basic_info(video.url);
         return videoInfo;
       })
     );
@@ -132,6 +133,9 @@ const addToQ = async ({ args, audioManager, song }) => {
   let { queue } = audioManager;
 
   try {
+    // if (queue.length + 1 === 25) {
+    //   return { error: "Queue limit reached" };
+    // }
     if (song) {
       const { title, by } = song;
       queue.push(song);
@@ -141,14 +145,14 @@ const addToQ = async ({ args, audioManager, song }) => {
     }
     const { info, type, error } = await searchSong(args);
     if (error) {
-      return { error };
+      return { error: `Oops,something went wrong, try -search ${args}` };
     }
     if (type === "playlist") {
       const [playlistInfo, videos] = info;
       const { title, channel } = playlistInfo;
       videos.forEach((promise) => {
         if (promise.status === "rejected") return;
-        const { title, channel, url, durationInSec } =
+        const { title, channel, url, durationInSec, durationRaw } =
           promise.value.video_details;
         queue.push({
           title,
@@ -156,6 +160,7 @@ const addToQ = async ({ args, audioManager, song }) => {
           url,
           relatedVideos: promise.value.related_videos,
           duration: durationInSec,
+          durationRaw,
         });
       });
       return {
@@ -164,7 +169,8 @@ const addToQ = async ({ args, audioManager, song }) => {
         )} was added to queue`,
       };
     } else {
-      const { title, channel, url, durationInSec } = info.video_details;
+      const { title, channel, url, durationInSec, durationRaw } =
+        info.video_details;
 
       queue.push({
         title,
@@ -172,6 +178,7 @@ const addToQ = async ({ args, audioManager, song }) => {
         url,
         relatedVideos: info.related_videos,
         duration: durationInSec,
+        durationRaw,
       });
 
       return {
@@ -204,11 +211,12 @@ const playSong = async ({ seek = 0, audioManager }) => {
     });
 
     if (seek === 0) {
-      await textChannel.send(
-        `:musical_note: Now playing ${bold(title)} by ${bold(
-          by
-        )} :musical_note:`
-      );
+      // await textChannel.send(
+      //   `:musical_note: Now playing ${bold(title)} by ${bold(
+      //     by
+      //   )} :musical_note:`
+      // );
+      await textChannel.send({ embeds: [nowPlayingEmbed(queue[0])] });
     }
 
     audioPlayer.play(resource);
@@ -253,14 +261,12 @@ const radio = async (audioManager) => {
   const { relatedVideos } = currentSong;
   audioManager.queue = [];
   queue.unshift(currentSong);
-  const addedResponse = [];
 
   for (const args of relatedVideos) {
-    const { addedResponse: addedVideo } = await addToQ({ args, audioManager });
-    addedResponse.push(addedVideo);
+    await addToQ({ args, audioManager });
   }
 
-  return addedResponse;
+  return { addedResponse: "Successfully populated queue!" };
 };
 
 const showQ = (audioManager) => {

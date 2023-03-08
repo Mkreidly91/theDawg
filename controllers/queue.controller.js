@@ -1,4 +1,5 @@
 const theDawgError = require("../Errors/theDawgError");
+const { splitMsg } = require("../Helpers/util.helpers");
 const { queueService } = require("../services");
 
 const queueController = async (message) => {
@@ -10,7 +11,14 @@ const queueController = async (message) => {
     return;
   }
 
-  await channel.send(response);
+  if (response.length <= 2000) {
+    await channel.send(response);
+  } else {
+    const splitResponse = splitMsg(response);
+    for (const chunk of splitResponse) {
+      await channel.send(chunk);
+    }
+  }
 };
 
 module.exports = queueController;

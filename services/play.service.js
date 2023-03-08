@@ -18,8 +18,9 @@ const playService = async ({ message, args, song }) => {
       song,
     });
     if (error) {
-      return { error: `Oops,something went wrong, try -search ${args}` };
+      return { error };
     }
+
     const audioManager = joinVoice({
       message,
       audioManager: getOrCreate(guildId),

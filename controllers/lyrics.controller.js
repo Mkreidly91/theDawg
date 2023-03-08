@@ -3,9 +3,15 @@ const { lyricsService } = require("../services");
 const { bold } = require("@discordjs/builders");
 const { Events, ButtonStyle } = require("discord.js");
 const { resultsToRowOfButtons } = require("../Helpers/buttonBuilder.helpers");
+const {
+  searchingEmbed,
+  normalMessageEmbed,
+} = require("../Helpers/embeds.helpers");
 
 const lyricsController = async ({ message, args, client }) => {
   const { channel } = message;
+  const { embed, file } = searchingEmbed();
+  const msg = await channel.send({ embeds: [embed], files: [file] });
   const { response, error } = await lyricsService({ message, args });
 
   if (error) {
@@ -16,9 +22,11 @@ const lyricsController = async ({ message, args, client }) => {
   if (Array.isArray(response)) {
     const rows = resultsToRowOfButtons({ results: response, lyrics: true });
 
-    const buttonsMessage = await channel.send({
+    const buttonsMessage = await msg.edit({
       content: `${bold("Choose lyrics:")}`,
       components: [...rows],
+      embeds: [],
+      files: [],
     });
 
     client.once(Events.InteractionCreate, async (interaction) => {

@@ -4,14 +4,28 @@ const { resultsToRowOfButtons } = require("../Helpers/buttonBuilder.helpers");
 const { searchService } = require("../services");
 const playController = require("./play.controller");
 const { Events } = require("discord.js");
+const {
+  searchingEmbed,
+  normalMessageEmbed,
+} = require("../Helpers/embeds.helpers");
+
 const searchController = async ({ message, args, client }) => {
   const { channel } = message;
+  const { embed, file } = searchingEmbed();
+  const msg = await channel.send({ embeds: [embed], files: [file] });
   const { response, error } = await searchService({ message, args });
-  const rows = resultsToRowOfButtons({ results: response, songs: true });
 
-  const buttonsMessage = await channel.send({
+  if (error) {
+    new theDawgError(channel, error).send();
+    return;
+  }
+
+  const rows = resultsToRowOfButtons({ results: response, songs: true });
+  const buttonsMessage = await msg.edit({
     content: `${bold("Choose Song:")}`,
     components: [...rows],
+    embeds: [],
+    files: [],
   });
 
   client.once(Events.InteractionCreate, async (interaction) => {
@@ -29,17 +43,22 @@ const searchController = async ({ message, args, client }) => {
           message,
           song: selectedSong,
         });
-        interaction.followUp(addedResponse);
+        if (error) {
+          console.log(error);
+          // await interaction.followUp({
+          //   embeds: [errorMessageEmbed(`theDawgError: ${error}`)],
+          // });
+          return;
+        }
+        await interaction.followUp({
+          embeds: [normalMessageEmbed(addedResponse)],
+          files: [],
+        });
       } catch (error) {
-        interaction.followUp(error);
+        await interaction.followUp(error);
       }
     }
   });
-
-  if (error) {
-    new theDawgError(channel, error).send();
-    return;
-  }
 };
 
 module.exports = searchController;

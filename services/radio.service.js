@@ -8,7 +8,7 @@ const radioService = async (message) => {
   if (!audioPlayer) {
     return { error: "No audio player connected" };
   }
-  const addedResponse = await radio(audioManager);
+  const { addedResponse } = await radio(audioManager);
   return { addedResponse };
 };
 
