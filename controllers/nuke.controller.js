@@ -1,11 +1,16 @@
+const { normalMessageEmbed } = require("../Helpers/embeds.helpers");
+
 const nukeController = async ({ message, args }) => {
-  message.channel.bulkDelete(parseInt(args)).then((messages) =>
-    message.channel.send(`deleted ${messages.size} messages`).then((message) =>
-      setTimeout(() => {
-        message.delete();
-      }, 2000)
-    )
-  );
+  const { channel } = message;
+  const deletedMessages = await channel.bulkDelete(parseInt(args));
+
+  const response = await channel.send({
+    embeds: [normalMessageEmbed(`deleting ${deletedMessages.size} messages`)],
+  });
+
+  setTimeout(() => {
+    response.delete();
+  }, 2000);
 };
 
 module.exports = nukeController;
