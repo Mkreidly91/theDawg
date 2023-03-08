@@ -20,7 +20,9 @@ const stopService = (message) => {
   destroyConnection(audioManager);
   resetState(guildId);
 
-  return { error: "" };
+  return {
+    response: "Stopped music playback and left the voice channel.",
+  };
 };
 
 module.exports = stopService;

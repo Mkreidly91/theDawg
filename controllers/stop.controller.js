@@ -1,12 +1,15 @@
 const theDawgError = require("../Errors/theDawgError");
+const { normalMessageEmbed } = require("../Helpers/embeds.helpers");
 const { stopService } = require("../services");
 
 const stopController = async (message) => {
-  const { error } = stopService(message);
+  const { channel } = message;
+  const { response, error } = stopService(message);
   if (error) {
-    new theDawgError(message.channel, error).send();
+    new theDawgError(channel, error).send();
     return;
   }
+  channel.send({ embeds: [normalMessageEmbed(response)] });
 };
 
 module.exports = stopController;

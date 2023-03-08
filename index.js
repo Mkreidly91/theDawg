@@ -22,10 +22,9 @@ require("dotenv").config();
 
 const theDawgError = require("./Errors/theDawgError");
 const Commands = require("./messageCommands/commands");
-const { channelController, routeManager } = require("./clientFunctions");
+const { routeManager } = require("./clientFunctions");
 const { guildCollection } = require("./database/index.js");
-const { TOKEN, PREFIX, GUILD_ID, TEXT_CHANNEL_ID, VOICE_CHANNEL_ID } =
-  process.env;
+const { TOKEN } = process.env;
 
 // Create a new client instance
 const client = new Client({
@@ -41,14 +40,8 @@ const client = new Client({
   partials: [Partials.Channel],
 });
 
-let textChannel;
-// When the client is ready, run this code (only once)
-// We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, (c) => {
   console.log(`Ready! Logged in as ${c.user.tag}`);
-  textChannel = client.channels.cache.get(TEXT_CHANNEL_ID);
-  const voiceChannel = client.channels.cache.get(VOICE_CHANNEL_ID);
-
   c.guilds.cache.forEach((guild) => {
     if (guild) {
       guildCollection.set(guild.id, {
@@ -66,17 +59,6 @@ client.once(Events.ClientReady, (c) => {
       });
     }
   });
-
-  // textChannel.send({
-  // content: "I am the Dawg, the big bad Dawg",
-  // files: [
-  //   {
-  //     attachment: "/Users/mostafa/Desktop/Discord-Bot/Resources/TheDawg.jpeg",
-  //     name: "file.jpg",
-  //     description: "A description of the file",
-  //   },
-  // ],
-  // });
 });
 
 client.on(Events.MessageCreate, async (message) => {
@@ -86,15 +68,10 @@ client.on(Events.MessageCreate, async (message) => {
     message.channel.send("shu baddak");
   }
   try {
-    //channelController(message);
     routeManager(message, client);
   } catch (error) {
     console.log(error);
   }
-});
-
-client.on(Events.MessageDelete, (message) => {
-  // message.channel.send(`Gotcha! Someone deleted "${message.content}"`);
 });
 
 // Log in to Discord with your client's token
