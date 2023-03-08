@@ -18,7 +18,7 @@ const pauseService = (message) => {
   }
 
   audioPlayer.pause();
-  return { error: "" };
+  return { response: "Playback paused." };
 };
 
 module.exports = pauseService;

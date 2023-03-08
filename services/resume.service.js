@@ -16,7 +16,7 @@ const resumeService = (message) => {
   }
 
   audioPlayer.unpause();
-  return { error: "" };
+  return { response: "Playback resumed." };
 };
 
 module.exports = resumeService;

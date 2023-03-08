@@ -8,7 +8,7 @@ const skipService = (message) => {
     return { error: "No audio player connected" };
   }
   audioPlayer.stop();
-  return { error: "" };
+  return { response: "Song skipped" };
 };
 
 module.exports = skipService;
