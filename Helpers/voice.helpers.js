@@ -16,19 +16,19 @@ const { nowPlayingEmbed } = require("./embeds.helpers");
 const { getBestSong } = require("./search.helpers");
 
 const joinVoice = ({ message, audioManager }) => {
-  const {
-    member: {
-      voice: { channel: voiceChannel },
-    },
-    channel,
-  } = message;
-  const {
-    id: channelId,
-    guild: { id: guildId, voiceAdapterCreator },
-  } = voiceChannel;
-
   try {
     if (audioManager.voiceChannel) return audioManager;
+
+    const {
+      member: {
+        voice: { channel: voiceChannel },
+      },
+      channel,
+    } = message;
+    const {
+      id: channelId,
+      guild: { id: guildId, voiceAdapterCreator },
+    } = voiceChannel;
 
     audioManager.textChannel = channel;
     audioManager.voiceChannel = voiceChannel;
@@ -89,15 +89,56 @@ const joinVoice = ({ message, audioManager }) => {
 
 //Implementing Search
 const searchSong = async (args, getAllResults = false) => {
-  const validate = await play.yt_validate(args);
+  const validate = play.yt_validate(args);
+  switch (validate) {
+    case "search": {
+      const searched = await play.search(args, {
+        source: { youtube: "video" },
+      });
+      if (!getAllResults) {
+        const bestResult = getBestSong(args, searched);
+        try {
+          const info = await play.video_basic_info(bestResult.url);
+          return { info, type: "search" };
+        } catch (error) {
+          return { error };
+        }
+      } else {
+        const videos = await Promise.allSettled(
+          searched.map(async (song) => {
+            const songInfo = await play.video_basic_info(song.url);
+            return songInfo;
+          })
+        );
+        return { info: videos, type: "search" };
+      }
+    }
+
+    case "video": {
+      const info = await play.video_basic_info(args);
+      return { info, type: "video" };
+    }
+
+    case "playlist": {
+      const playlistInfo = await play.playlist_info(args);
+      const videos = await Promise.allSettled(
+        playlistInfo.videos.map(async (video) => {
+          const videoInfo = await play.video_basic_info(video.url);
+          return videoInfo;
+        })
+      );
+      const info = [playlistInfo, videos];
+      return { info, type: "playlist" };
+    }
+  }
+
   if (validate === "search") {
     const searched = await play.search(args, {
       source: { youtube: "video" },
     });
 
-    // try filtering the search result to favor official artists
     if (!getAllResults) {
-      const bestResult = getBestSong(searched);
+      const bestResult = getBestSong(args, searched);
       try {
         const info = await play.video_basic_info(bestResult.url);
         return { info, type: "search" };
@@ -111,7 +152,7 @@ const searchSong = async (args, getAllResults = false) => {
           return songInfo;
         })
       );
-      return { info: videos };
+      return { info: videos, type: "search" };
     }
   } else if (validate === "video") {
     const info = await play.video_basic_info(args);

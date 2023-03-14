@@ -68,7 +68,7 @@ client.on(Events.MessageCreate, async (message) => {
     message.channel.send("shu baddak");
   }
   try {
-    routeManager(message, client);
+    routeManager(message);
   } catch (error) {
     console.log(error);
   }

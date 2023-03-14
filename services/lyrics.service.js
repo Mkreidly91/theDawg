@@ -24,23 +24,20 @@ const lyricsService = async ({ message, args }) => {
       if (type === "playlist") {
         return { error: "Invalid Argument: cannot search for playlists" };
       } else {
-        const { title, channel, url, durationInSec, id } = info.video_details;
+        const { title } = info.video_details;
 
         targetSong = {
           title,
-          by: channel.name,
-          url,
-          relatedVideos: info.related_videos,
-          duration: durationInSec,
-          id,
         };
       }
     }
 
-    const { title: songTitle, by } = targetSong;
-    const searchResults = await geniusClient.songs.search(songTitle);
+    const { title } = targetSong;
+
+    const searchResults = await geniusClient.songs.search(title);
+
     if (!searchResults[0]) {
-      return { response: "No results found" };
+      return { error: "No results found" };
     }
     return { response: searchResults };
   } catch (error) {

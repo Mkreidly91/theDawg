@@ -32,7 +32,16 @@ const playArgsError = ({ textChannel, args }) => {
   }
   return false;
 };
-
+const searchArgsError = ({ textChannel, args }) => {
+  if (!args.trim()) {
+    new theDawgError(
+      textChannel,
+      `Please provide an argument: "-search {{song}}"`
+    ).send();
+    return true;
+  }
+  return false;
+};
 const seekArgsError = ({ args, audioManager }) => {
   let error = "";
 
@@ -54,4 +63,5 @@ module.exports = {
   playArgsError,
   seekArgsError,
   audioPlayerError,
+  searchArgsError,
 };

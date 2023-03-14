@@ -1,6 +1,6 @@
 const Fuse = require("fuse.js");
 
-const getBestSong = (results) => {
+const getBestSong = (args, results) => {
   if (results.length === 1) {
     return results[0];
   } else {
@@ -9,8 +9,9 @@ const getBestSong = (results) => {
         channel: { verified, artist },
         i,
       } = song;
-
-      if (verified && artist && !song.title.toLowerCase().includes("cover")) {
+      const isCover = song.title.toLowerCase().includes("cover");
+      const containsArgs = song.title.toLowerCase().includes(args);
+      if (verified && artist && !isCover && containsArgs) {
         return song;
       }
     });

@@ -10,13 +10,15 @@ const searchService = async ({ message, args }) => {
       const {
         value: { video_details },
       } = promise;
-      const { title, channel, url, durationInSec, id } = video_details;
+      const { title, channel, url, durationInSec, durationRaw, id } =
+        video_details;
       songs.push({
         title,
         by: channel.name,
         url,
         relatedVideos: promise.value.related_videos,
         duration: durationInSec,
+        durationRaw,
         id,
       });
     });
