@@ -16,7 +16,7 @@ const lyricsController = async ({ message, args }) => {
   const { response, error } = await lyricsService({ message, args });
 
   if (error) {
-    msg.delete();
+    await msg.delete();
     new theDawgError(channel, error).send();
     return;
   }

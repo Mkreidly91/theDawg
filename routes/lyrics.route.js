@@ -6,7 +6,7 @@ const lyrics = async (message) => {
   const content = message.content.split(" ");
   content.shift();
   const args = content.join(" ");
-  console.log(content);
+
   if (!content[0]) {
     if (voiceConnectionError(message)) return;
   }

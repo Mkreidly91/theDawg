@@ -12,7 +12,7 @@ const { bold } = require("discord.js");
 
 const play = require("play-dl");
 const { resetState } = require("../database");
-const { nowPlayingEmbed } = require("./embeds.helpers");
+const { nowPlayingEmbed, normalMessageEmbed } = require("./embeds.helpers");
 const { getBestSong } = require("./search.helpers");
 
 const joinVoice = ({ message, audioManager }) => {
@@ -252,11 +252,6 @@ const playSong = async ({ seek = 0, audioManager }) => {
     });
 
     if (seek === 0) {
-      // await textChannel.send(
-      //   `:musical_note: Now playing ${bold(title)} by ${bold(
-      //     by
-      //   )} :musical_note:`
-      // );
       await textChannel.send({ embeds: [nowPlayingEmbed(queue[0])] });
     }
 
@@ -281,7 +276,17 @@ const playYt = async (audioManager) => {
     console.log(error);
   }
 };
+const playCustom = async (url, audioManager) => {
+  const { audioPlayer, textChannel } = audioManager;
+  // if (audioPlayerError({ textChannel, audioPlayer })) return;
+  audioPlayer.stop();
 
+  const resource = createAudioResource(url, {
+    inlineVolume: false,
+  });
+
+  audioPlayer.play(resource);
+};
 const seekInterval = async ({ args, audioManager }) => {
   const { queue, currentSong } = audioManager;
 
@@ -332,4 +337,5 @@ module.exports = {
   radio,
   showQ,
   searchSong,
+  playCustom,
 };

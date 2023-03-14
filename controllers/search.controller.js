@@ -17,6 +17,7 @@ const searchController = async ({ message, args }) => {
   const { response, error } = await searchService({ message, args });
 
   if (error) {
+    await msg.delete();
     new theDawgError(channel, error).send();
     return;
   }

@@ -1,5 +1,6 @@
 const deafenController = require("./deafen.controller");
 const khallisneController = require("./khallisne.controller");
+const kreiksController = require("./kreiks.controller");
 const lyricsController = require("./lyrics.controller");
 const muteController = require("./mute.controller");
 const nukeController = require("./nuke.controller");
@@ -13,6 +14,7 @@ const searchController = require("./search.controller");
 const seekController = require("./seek.controller");
 const skipController = require("./skip.controller");
 const stopController = require("./stop.controller");
+const topGController = require("./topG.controller");
 const undeafenController = require("./undeafen.controller");
 const unmuteController = require("./unmute.controller");
 
@@ -34,4 +36,6 @@ module.exports = {
   queueController,
   lyricsController,
   searchController,
+  kreiksController,
+  topGController,
 };
