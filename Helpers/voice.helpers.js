@@ -95,12 +95,15 @@ const searchSong = async (args, getAllResults = false) => {
       const searched = await play.search(args, {
         source: { youtube: "video" },
       });
+
       if (!getAllResults) {
         const bestResult = getBestSong(args, searched);
         try {
           const info = await play.video_basic_info(bestResult.url);
+          console.log(bestResult, info);
           return { info, type: "search" };
         } catch (error) {
+          console.log(error);
           return { error };
         }
       } else {

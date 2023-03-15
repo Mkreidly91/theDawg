@@ -9,7 +9,7 @@ const lyricsService = async ({ message, args }) => {
     const { guildId, channel } = message;
     const audioManager = getAudioManager(guildId);
     const { audioPlayer, currentSong } = audioManager;
-    let targetSong;
+
     if (!args) {
       if (!audioPlayer) {
         return { error: "No audio player connected" };
@@ -18,23 +18,11 @@ const lyricsService = async ({ message, args }) => {
       if (!currentSong) {
         return { error: "No song currently playing" };
       }
-      targetSong = currentSong;
-    } else {
-      const { info, type } = await searchSong(args);
-      if (type === "playlist") {
-        return { error: "Invalid Argument: cannot search for playlists" };
-      } else {
-        const { title } = info.video_details;
-
-        targetSong = {
-          title,
-        };
-      }
     }
 
-    const { title } = targetSong;
-
-    const searchResults = await geniusClient.songs.search(title);
+    const searchResults = await geniusClient.songs.search(
+      args ? args : currentSong.title
+    );
 
     if (!searchResults[0]) {
       return { error: "No results found" };

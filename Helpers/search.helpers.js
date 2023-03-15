@@ -15,7 +15,7 @@ const getBestSong = (args, results) => {
         return song;
       }
     });
-
+    console.log(bestResults);
     if (bestResults[0]) {
       return bestResults[0];
     } else {

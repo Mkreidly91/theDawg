@@ -20,10 +20,8 @@ const {
 } = GatewayIntentBits;
 require("dotenv").config();
 
-const theDawgError = require("./Errors/theDawgError");
-const Commands = require("./messageCommands/commands");
-const { routeManager } = require("./clientFunctions");
 const { guildCollection } = require("./database/index.js");
+const { routeManager } = require("./Helpers/client.helpers");
 const { TOKEN } = process.env;
 
 // Create a new client instance
