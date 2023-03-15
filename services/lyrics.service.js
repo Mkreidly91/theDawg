@@ -5,32 +5,28 @@ const { getBestLyrics } = require("../Helpers/search.helpers");
 const { searchSong } = require("../Helpers/voice.helpers");
 
 const lyricsService = async ({ message, args }) => {
-  try {
-    const { guildId, channel } = message;
-    const audioManager = getAudioManager(guildId);
-    const { audioPlayer, currentSong } = audioManager;
+  const { guildId, channel } = message;
+  const audioManager = getAudioManager(guildId);
+  const { audioPlayer, currentSong } = audioManager;
 
-    if (!args) {
-      if (!audioPlayer) {
-        return { error: "No audio player connected" };
-      }
-
-      if (!currentSong) {
-        return { error: "No song currently playing" };
-      }
+  if (!args) {
+    if (!audioPlayer) {
+      return { error: "No audio player connected" };
     }
 
-    const searchResults = await geniusClient.songs.search(
-      args ? args : currentSong.title
-    );
-
-    if (!searchResults[0]) {
-      return { error: "No results found" };
+    if (!currentSong) {
+      return { error: "No song currently playing" };
     }
-    return { response: searchResults };
-  } catch (error) {
-    console.log(error);
   }
+
+  const searchResults = await geniusClient.songs.search(
+    args ? args : currentSong.title
+  );
+
+  if (!searchResults[0]) {
+    return { error: "No results found" };
+  }
+  return { response: searchResults };
 };
 
 module.exports = lyricsService;

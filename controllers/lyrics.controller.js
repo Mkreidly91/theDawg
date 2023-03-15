@@ -20,7 +20,6 @@ const lyricsController = async ({ message, args }) => {
     new theDawgError(channel, error).send();
     return;
   }
-  //New Code
 
   const rows = resultsToRowOfButtons({ results: response, lyrics: true });
 
