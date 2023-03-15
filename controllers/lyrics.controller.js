@@ -59,7 +59,6 @@ const lyricsController = async ({ message, args }) => {
           const lyricsArr = splitMsg(lyrics);
           await interaction.followUp(`${bold(fullTitle)}:\n\n`);
           for (const section of lyricsArr) {
-            console.log(section.length, section);
             await channel.send(section);
           }
 

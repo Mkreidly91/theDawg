@@ -4,9 +4,10 @@ const { TOKEN, PREFIX, GUILD_ID, TEXT_CHANNEL_ID, VOICE_CHANNEL_ID } =
   process.env;
 
 const isAdmin = (member) => {
-  return member.roles.cache.find((role) => role.name === "Admin") !== undefined
-    ? true
-    : false;
+  // return member.roles.cache.find((role) => role.name === "Admin") !== undefined
+  //   ? true
+  //   : false;
+  return true;
 };
 
 const routes = require("./routes");

@@ -242,7 +242,7 @@ const playSong = async ({ seek = 0, audioManager }) => {
     //keeping track of last played song
     audioManager.currentSong = queue[0];
     const audio = await play.stream(queue[0].url, {
-      discordPlayerCompatibility: true,
+      discordPlayerCompatibility: false,
       seek,
     });
 
