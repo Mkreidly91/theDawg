@@ -5,105 +5,96 @@ const {
   AudioPlayerStatus,
   NoSubscriberBehavior,
   getVoiceConnection,
-  VoiceConnection,
   VoiceConnectionStatus,
-} = require("@discordjs/voice");
-const { bold } = require("discord.js");
+} = require('@discordjs/voice');
+const { bold } = require('discord.js');
 
-const play = require("play-dl");
-const { resetState } = require("../database");
-const { nowPlayingEmbed, normalMessageEmbed } = require("./embeds.helpers");
-const { getBestSong } = require("./search.helpers");
+const play = require('play-dl');
+const { resetState } = require('../database');
+const { nowPlayingEmbed } = require('./embeds.helpers');
+const { getBestSong } = require('./search.helpers');
 
 const joinVoice = ({ message, audioManager }) => {
-  try {
-    if (audioManager.voiceChannel) return audioManager;
+  if (audioManager.voiceChannel) return audioManager;
 
-    const {
-      member: {
-        voice: { channel: voiceChannel },
-      },
-      channel,
-    } = message;
-    const {
-      id: channelId,
-      guild: { id: guildId, voiceAdapterCreator },
-    } = voiceChannel;
+  const {
+    member: {
+      voice: { channel: voiceChannel },
+    },
+    channel,
+  } = message;
+  const {
+    id: channelId,
+    guild: { id: guildId, voiceAdapterCreator },
+  } = voiceChannel;
 
-    audioManager.textChannel = channel;
-    audioManager.voiceChannel = voiceChannel;
+  audioManager.textChannel = channel;
+  audioManager.voiceChannel = voiceChannel;
 
-    const prevConnection = getVoiceConnection(guildId);
-    if (prevConnection) {
-      audioManager.connection = prevConnection;
-    } else {
-      const newConnection = joinVoiceChannel({
-        channelId: channelId,
-        guildId: guildId,
-        adapterCreator: voiceAdapterCreator,
-        selfDeaf: false,
-      });
+  const prevConnection = getVoiceConnection(guildId);
+  if (prevConnection) {
+    audioManager.connection = prevConnection;
+  } else {
+    const newConnection = joinVoiceChannel({
+      channelId: channelId,
+      guildId: guildId,
+      adapterCreator: voiceAdapterCreator,
+      selfDeaf: false,
+    });
 
-      audioManager.connection = newConnection;
-    }
-
-    //new audioPlayer
-    if (!audioManager.audioPlayer) {
-      const audioPlayer = createAudioPlayer({
-        behaviors: {
-          noSubscriber: NoSubscriberBehavior.Pause,
-        },
-      });
-
-      //set the audio player in audioManager and subcribe the connection
-      audioManager.audioPlayer = audioPlayer;
-      const subscription = audioManager.connection.subscribe(
-        audioManager.audioPlayer
-      );
-
-      //disconnect after 5 seconds of idle
-      audioManager.audioPlayer.once(AudioPlayerStatus.Idle, () => {
-        if (audioManager.queue.length === 0) {
-          setTimeout(() => {
-            destroyConnection(audioManager);
-            resetState(guildId);
-          }, 5000);
-        }
-      });
-      //Solution for random 1min connection disconnect caused by an update on Discord's side
-      audioManager.connection.on("stateChange", (old_state, new_state) => {
-        if (
-          old_state.status === VoiceConnectionStatus.Ready &&
-          new_state.status === VoiceConnectionStatus.Connecting
-        ) {
-          audioManager.connection.configureNetworking();
-        }
-      });
-    }
-
-    return audioManager;
-  } catch (error) {
-    console.log(error);
+    audioManager.connection = newConnection;
   }
+
+  //new audioPlayer
+  if (!audioManager.audioPlayer) {
+    const audioPlayer = createAudioPlayer({
+      behaviors: {
+        noSubscriber: NoSubscriberBehavior.Pause,
+      },
+    });
+
+    //set the audio player in audioManager and subcribe the connection
+    audioManager.audioPlayer = audioPlayer;
+    audioManager.connection.subscribe(audioPlayer);
+
+    //disconnect after 5 seconds of idle
+    audioPlayer.once(AudioPlayerStatus.Idle, () => {
+      if (audioManager.queue.length === 0) {
+        setTimeout(() => {
+          destroyConnection(audioManager);
+          resetState(guildId);
+        }, 5000);
+      }
+    });
+    //Solution for random 1min connection disconnect caused by an update on Discord's side
+    audioManager.connection.on('stateChange', (old_state, new_state) => {
+      if (
+        old_state.status === VoiceConnectionStatus.Ready &&
+        new_state.status === VoiceConnectionStatus.Connecting
+      ) {
+        audioManager.connection.configureNetworking();
+      }
+    });
+  }
+
+  return audioManager;
 };
 
 //Implementing Search
 const searchSong = async (args, getAllResults = false) => {
   const validate = play.yt_validate(args);
   switch (validate) {
-    case "search": {
+    case 'search': {
       const searched = await play.search(args, {
-        source: { youtube: "video" },
+        source: { youtube: 'video' },
       });
 
       if (!getAllResults) {
         const bestResult = getBestSong(args, searched);
         try {
           const info = await play.video_basic_info(bestResult.url);
-          console.log(bestResult, info);
-          return { info, type: "search" };
+          return { info, type: 'search' };
         } catch (error) {
-          console.log(error);
           return { error };
         }
       } else {
@@ -113,16 +104,16 @@ const searchSong = async (args, getAllResults = false) => {
             return songInfo;
           })
         );
-        return { info: videos, type: "search" };
+        return { info: videos, type: 'search' };
       }
     }
 
-    case "video": {
+    case 'video': {
       const info = await play.video_basic_info(args);
-      return { info, type: "video" };
+      return { info, type: 'video' };
     }
 
-    case "playlist": {
+    case 'playlist': {
       const playlistInfo = await play.playlist_info(args);
       const videos = await Promise.allSettled(
         playlistInfo.videos.map(async (video) => {
@@ -131,108 +122,67 @@ const searchSong = async (args, getAllResults = false) => {
         })
       );
       const info = [playlistInfo, videos];
-      return { info, type: "playlist" };
+      return { info, type: 'playlist' };
     }
-  }
-
-  if (validate === "search") {
-    const searched = await play.search(args, {
-      source: { youtube: "video" },
-    });
-
-    if (!getAllResults) {
-      const bestResult = getBestSong(args, searched);
-      try {
-        const info = await play.video_basic_info(bestResult.url);
-        return { info, type: "search" };
-      } catch (error) {
-        return { error };
-      }
-    } else {
-      const videos = await Promise.allSettled(
-        searched.map(async (song) => {
-          const songInfo = await play.video_basic_info(song.url);
-          return songInfo;
-        })
-      );
-      return { info: videos, type: "search" };
-    }
-  } else if (validate === "video") {
-    const info = await play.video_basic_info(args);
-    return { info, type: "video" };
-  } else if (validate === "playlist") {
-    const playlistInfo = await play.playlist_info(args);
-    const videos = await Promise.allSettled(
-      playlistInfo.videos.map(async (video) => {
-        const videoInfo = await play.video_basic_info(video.url);
-        return videoInfo;
-      })
-    );
-    const info = [playlistInfo, videos];
-    return { info, type: "playlist" };
   }
 };
 
 const addToQ = async ({ args, audioManager, song }) => {
   let { queue } = audioManager;
 
-  try {
-    // if (queue.length + 1 === 25) {
-    //   return { error: "Queue limit reached" };
-    // }
-    if (song) {
-      const { title, by } = song;
-      queue.push(song);
-      return {
-        addedResponse: `${bold(title)} by ${bold(by)} was added to queue`,
-      };
-    }
-    const { info, type, error } = await searchSong(args);
-    if (error) {
-      return { error: `Oops,something went wrong, try -search ${args}` };
-    }
-    if (type === "playlist") {
-      const [playlistInfo, videos] = info;
-      const { title, channel } = playlistInfo;
-      videos.forEach((promise) => {
-        if (promise.status === "rejected") return;
-        const { title, channel, url, durationInSec, durationRaw } =
-          promise.value.video_details;
-        queue.push({
-          title,
-          by: channel.name,
-          url,
-          relatedVideos: promise.value.related_videos,
-          duration: durationInSec,
-          durationRaw,
-        });
-      });
-      return {
-        addedResponse: `Playlist: "${bold(title)}" by ${bold(
-          channel.name
-        )} was added to queue`,
-      };
-    } else {
+  // if (queue.length + 1 === 25) {
+  //   return { error: "Queue limit reached" };
+  // }
+  if (song) {
+    const { title, by } = song;
+    queue.push(song);
+    return {
+      addedResponse: `${bold(title)} by ${bold(by)} was added to queue`,
+    };
+  }
+  const { info, type, error } = await searchSong(args);
+  if (error) {
+    return { error: `Oops,something went wrong, try -search ${args}` };
+  }
+  if (type === 'playlist') {
+    const [playlistInfo, videos] = info;
+    const { title, channel } = playlistInfo;
+    videos.forEach((promise) => {
+      if (promise.status === 'rejected') return;
       const { title, channel, url, durationInSec, durationRaw } =
-        info.video_details;
-
+        promise.value.video_details;
       queue.push({
         title,
         by: channel.name,
         url,
-        relatedVideos: info.related_videos,
+        relatedVideos: promise.value.related_videos,
         duration: durationInSec,
         durationRaw,
       });
+    });
+    return {
+      addedResponse: `Playlist: "${bold(title)}" by ${bold(
+        channel.name
+      )} was added to queue`,
+    };
+  } else {
+    const { title, channel, url, durationInSec, durationRaw } =
+      info.video_details;
 
-      return {
-        addedResponse: `${bold(title)} by ${bold(
-          channel.name
-        )} was added to queue`,
-      };
-    }
-  } catch (error) {
-    console.log(error);
+    queue.push({
+      title,
+      by: channel.name,
+      url,
+      relatedVideos: info.related_videos,
+      duration: durationInSec,
+      durationRaw,
+    });
+
+    return {
+      addedResponse: `${bold(title)} by ${bold(
+        channel.name
+      )} was added to queue`,
+    };
   }
 };
 
@@ -240,8 +190,6 @@ const playSong = async ({ seek = 0, audioManager }) => {
   const { queue, audioPlayer, textChannel } = audioManager;
 
   if (!audioManager.isPlaying) {
-    const { title, by } = queue[0];
-
     //keeping track of last played song
     audioManager.currentSong = queue[0];
     const audio = await play.stream(queue[0].url, {
@@ -270,18 +218,13 @@ const playSong = async ({ seek = 0, audioManager }) => {
 };
 
 const playYt = async (audioManager) => {
-  try {
-    if (audioManager.isPlaying) return;
-    else {
-      playSong({ audioManager });
-    }
-  } catch (error) {
-    console.log(error);
+  if (audioManager.isPlaying) return;
+  else {
+    playSong({ audioManager });
   }
 };
 const playCustom = async (url, audioManager) => {
-  const { audioPlayer, textChannel } = audioManager;
-  // if (audioPlayerError({ textChannel, audioPlayer })) return;
+  const { audioPlayer } = audioManager;
   audioPlayer.stop();
 
   const resource = createAudioResource(url, {
@@ -315,7 +258,7 @@ const radio = async (audioManager) => {
     await addToQ({ args, audioManager });
   }
 
-  return { addedResponse: "Successfully populated queue!" };
+  return { addedResponse: 'Successfully populated queue!' };
 };
 
 const showQ = (audioManager) => {
@@ -327,7 +270,7 @@ const showQ = (audioManager) => {
       const { title, by } = song;
       return `${index + 2}:  ${bold(title)} by ${bold(by)}`;
     })
-    .join("\n");
+    .join('\n');
 
   return `1:  ${bold(title)} by ${bold(by)}\n${queueSongs}`;
 };

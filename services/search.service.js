@@ -1,33 +1,28 @@
-const { searchSong } = require("../Helpers/voice.helpers");
+const { searchSong } = require('../Helpers/voice.helpers');
 
-const searchService = async ({ message, args }) => {
-  try {
-    const { info } = await searchSong(args, true);
-    let songs = [];
+const searchService = async (args) => {
+  const { info } = await searchSong(args, true);
+  let songs = [];
 
-    info.forEach((promise) => {
-      if (promise.status === "rejected") return;
-      const {
-        value: { video_details },
-      } = promise;
-      const { title, channel, url, durationInSec, durationRaw, id } =
-        video_details;
-      songs.push({
-        title,
-        by: channel.name,
-        url,
-        relatedVideos: promise.value.related_videos,
-        duration: durationInSec,
-        durationRaw,
-        id,
-      });
+  info.forEach((promise) => {
+    if (promise.status === 'rejected') return;
+    const {
+      value: { video_details },
+    } = promise;
+    const { title, channel, url, durationInSec, durationRaw, id } =
+      video_details;
+    songs.push({
+      title,
+      by: channel.name,
+      url,
+      relatedVideos: promise.value.related_videos,
+      duration: durationInSec,
+      durationRaw,
+      id,
     });
+  });
 
-    return { response: songs };
-  } catch (error) {
-    console.log(error);
-    // return { error };
-  }
+  return { response: songs };
 };
 
 module.exports = searchService;

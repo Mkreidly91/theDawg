@@ -1,4 +1,4 @@
-const { Collection } = require("discord.js");
+const { Collection } = require('discord.js');
 const guildCollection = new Collection();
 
 const getGuild = (guildId) => {
@@ -36,13 +36,6 @@ const resetState = (guildId) => {
     isPlaying: false,
     currentSong: null,
   };
-};
-
-const destroyConnection = (guildId) => {
-  const { connection, audioPlayer } = getAudioManager(guildId);
-  connection.destroy();
-  audioPlayer.removeAllListeners();
-  resetState(guildId);
 };
 
 module.exports = {

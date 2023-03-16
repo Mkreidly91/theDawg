@@ -1,13 +1,4 @@
-const {
-  Client,
-  Events,
-  GatewayIntentBits,
-  Collection,
-  REST,
-  Partials,
-  Routes,
-  VoiceChannel,
-} = require("discord.js");
+const { Client, Events, GatewayIntentBits, Partials } = require('discord.js');
 
 const {
   Guilds,
@@ -18,10 +9,11 @@ const {
   DirectMessages,
   GuildVoiceStates,
 } = GatewayIntentBits;
-require("dotenv").config();
 
-const { guildCollection } = require("./database/index.js");
-const { routeManager } = require("./Helpers/client.helpers");
+require('dotenv').config();
+
+const { guildCollection } = require('./database/index.js');
+const { routeManager } = require('./Helpers/client.helpers');
 const { TOKEN } = process.env;
 
 // Create a new client instance
@@ -39,6 +31,7 @@ const client = new Client({
 });
 
 client.once(Events.ClientReady, (c) => {
+  // eslint-disable-next-line no-console
   console.log(`Ready! Logged in as ${c.user.tag}`);
   c.guilds.cache.forEach((guild) => {
     if (guild) {
@@ -60,14 +53,18 @@ client.once(Events.ClientReady, (c) => {
 });
 
 client.on(Events.MessageCreate, async (message) => {
-  const { content, member } = message;
+  const {
+    channel,
+    author: { bot },
+  } = message;
 
-  if (!message.author.bot && message.channel.isDMBased()) {
-    message.channel.send("shu baddak");
+  if (!bot && channel.isDMBased()) {
+    message.channel.send('shu baddak');
   }
   try {
     routeManager(message);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log(error);
   }
 });

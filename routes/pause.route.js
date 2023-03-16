@@ -1,8 +1,5 @@
-const { pauseController } = require("../controllers");
-const {
-  voiceConnectionError,
-  playArgsError,
-} = require("../Errors/voiceErrors");
+const { pauseController } = require('../controllers');
+const { voiceConnectionError } = require('../Errors/voiceErrors');
 
 const pause = async (message) => {
   if (voiceConnectionError(message)) return;

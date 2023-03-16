@@ -1,13 +1,10 @@
-const theDawgError = require("../Errors/theDawgError");
-const { lyricsService } = require("../services");
-const { bold } = require("@discordjs/builders");
-const { Events, ButtonStyle } = require("discord.js");
-const { resultsToRowOfButtons } = require("../Helpers/buttonBuilder.helpers");
-const {
-  searchingEmbed,
-  normalMessageEmbed,
-} = require("../Helpers/embeds.helpers");
-const { splitMsg } = require("../Helpers/util.helpers");
+const theDawgError = require('../Errors/theDawgError');
+const { lyricsService } = require('../services');
+const { bold } = require('@discordjs/builders');
+
+const { resultsToRowOfButtons } = require('../Helpers/buttonBuilder.helpers');
+const { searchingEmbed } = require('../Helpers/embeds.helpers');
+const { splitMsg } = require('../Helpers/util.helpers');
 
 const lyricsController = async ({ message, args }) => {
   const { channel } = message;
@@ -24,7 +21,7 @@ const lyricsController = async ({ message, args }) => {
   const rows = resultsToRowOfButtons({ results: response, lyrics: true });
 
   const buttonsMessage = await msg.edit({
-    content: `${bold("Choose lyrics:")}`,
+    content: `${bold('Choose lyrics:')}`,
     components: [...rows],
     embeds: [],
     files: [],
@@ -34,7 +31,7 @@ const lyricsController = async ({ message, args }) => {
     time: 20_000, // how long you want it to collect for, in ms (this is 15 seconds)
   });
 
-  collector.on("collect", async (interaction) => {
+  collector.on('collect', async (interaction) => {
     if (interaction.isChatInputCommand()) return;
     if (!interaction.isButton()) return;
     await interaction.deferReply();
@@ -54,17 +51,13 @@ const lyricsController = async ({ message, args }) => {
       const { fullTitle } = selectedSong;
       const lyrics = await selectedSong.lyrics();
       if (lyrics.length > 2000) {
-        try {
-          const lyricsArr = splitMsg(lyrics);
-          await interaction.followUp(`${bold(fullTitle)}:\n\n`);
-          for (const section of lyricsArr) {
-            await channel.send(section);
-          }
-
-          return;
-        } catch (error) {
-          console.log(error);
+        const lyricsArr = splitMsg(lyrics);
+        await interaction.followUp(`${bold(fullTitle)}:\n\n`);
+        for (const section of lyricsArr) {
+          await channel.send(section);
         }
+
+        return;
       }
 
       await interaction.followUp(`${bold(fullTitle)}:\n\n`);

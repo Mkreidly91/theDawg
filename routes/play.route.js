@@ -1,17 +1,16 @@
-const { playController } = require("../controllers");
-const theDawgError = require("../Errors/theDawgError");
+const { playController } = require('../controllers');
 
 const {
   voiceConnectionError,
   playArgsError,
-} = require("../Errors/voiceErrors");
+} = require('../Errors/voiceErrors');
 
 const play = async (message) => {
   if (voiceConnectionError(message)) return;
 
-  const content = message.content.split(" ");
+  const content = message.content.split(' ');
   content.shift();
-  const args = content.join(" ");
+  const args = content.join(' ');
   if (playArgsError({ textChannel: message.channel, args })) return;
   playController({ message, args });
 };

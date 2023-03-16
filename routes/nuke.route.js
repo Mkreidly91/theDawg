@@ -1,9 +1,8 @@
-const { nukeController } = require("../controllers");
-const theDawgError = require("../Errors/theDawgError");
-const { membersVoiceService } = require("../services");
+const { nukeController } = require('../controllers');
+const theDawgError = require('../Errors/theDawgError');
 
 const nuke = async (message) => {
-  const args = message.content.split(" ")[1];
+  const args = message.content.split(' ')[1];
 
   const checkFormat = (args) => {
     const int = parseInt(args);

@@ -1,6 +1,5 @@
-const { ActionRowBuilder, ButtonBuilder } = require("@discordjs/builders");
-const { enIE, ka } = require("date-fns/locale");
-const { ButtonStyle } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder } = require('@discordjs/builders');
+const { ButtonStyle } = require('discord.js');
 
 const resultsToRowOfButtons = ({ results, lyrics, songs }) => {
   let objects;
@@ -12,45 +11,37 @@ const resultsToRowOfButtons = ({ results, lyrics, songs }) => {
 
   const rows = createRowsForButtons(objects.length);
 
-  try {
-    if (lyrics) {
-      let i = 0;
-      objects.forEach((song, index) => {
-        const { fullTitle, id } = song;
-        const button = new ButtonBuilder()
-          .setCustomId(`${id}`)
-          .setLabel(
-            fullTitle.length > 80
-              ? `${fullTitle.substring(0, 77)}...`
-              : fullTitle
-          )
-          .setStyle(ButtonStyle.Primary);
-        if (index !== 0 && index % 5 === 0) i++;
-        rows[i].addComponents(button);
-      });
-    } else if (songs) {
-      let i = 0;
-      objects.forEach((song, index) => {
-        const { title, by, id } = song;
-        const fullTitle = `${title} by ${by}`;
-        const button = new ButtonBuilder()
-          .setCustomId(`${id}`)
-          .setLabel(
-            fullTitle.length > 80
-              ? `${fullTitle.substring(0, 77)}...`
-              : fullTitle
-          )
-          .setStyle(ButtonStyle.Primary);
+  if (lyrics) {
+    let i = 0;
+    objects.forEach((song, index) => {
+      const { fullTitle, id } = song;
+      const button = new ButtonBuilder()
+        .setCustomId(`${id}`)
+        .setLabel(
+          fullTitle.length > 80 ? `${fullTitle.substring(0, 77)}...` : fullTitle
+        )
+        .setStyle(ButtonStyle.Primary);
+      if (index !== 0 && index % 5 === 0) i++;
+      rows[i].addComponents(button);
+    });
+  } else if (songs) {
+    let i = 0;
+    objects.forEach((song, index) => {
+      const { title, by, id } = song;
+      const fullTitle = `${title} by ${by}`;
+      const button = new ButtonBuilder()
+        .setCustomId(`${id}`)
+        .setLabel(
+          fullTitle.length > 80 ? `${fullTitle.substring(0, 77)}...` : fullTitle
+        )
+        .setStyle(ButtonStyle.Primary);
 
-        if (index !== 0 && index % 5 === 0) i++;
-        rows[i].addComponents(button);
-      });
-    }
-
-    return rows;
-  } catch (error) {
-    console.log(error);
+      if (index !== 0 && index % 5 === 0) i++;
+      rows[i].addComponents(button);
+    });
   }
+
+  return rows;
 };
 
 const createRowsForButtons = (num) => {

@@ -1,15 +1,15 @@
-const { searchController } = require("../controllers");
-const theDawgError = require("../Errors/theDawgError");
+const { searchController } = require('../controllers');
+
 const {
   voiceConnectionError,
   searchArgsError,
-} = require("../Errors/voiceErrors");
+} = require('../Errors/voiceErrors');
 
 const search = async (message) => {
   if (voiceConnectionError(message)) return;
-  const content = message.content.split(" ");
+  const content = message.content.split(' ');
   content.shift();
-  const args = content.join(" ");
+  const args = content.join(' ');
   if (searchArgsError({ textChannel: message.channel, args })) return;
   searchController({ message, args });
 };

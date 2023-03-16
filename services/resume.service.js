@@ -1,22 +1,17 @@
-const { getAudioManager } = require("../database");
+const { getAudioManager } = require('../database');
 
 const resumeService = (message) => {
-  const {
-    member: {
-      voice: { channel: voiceChannel },
-    },
-    guild: { id: guildId },
-  } = message;
+  const { guildid } = message;
 
-  const audioManager = getAudioManager(guildId);
-  const { audioPlayer } = audioManager;
+  const audiomanager = getAudioManager(guildid);
+  const { audioplayer } = audiomanager;
 
-  if (!audioPlayer) {
-    return { error: "No audio player connected" };
+  if (!audioplayer) {
+    return { error: 'no audio player connected' };
   }
 
-  audioPlayer.unpause();
-  return { response: "Playback resumed." };
+  audioplayer.unpause();
+  return { response: 'playback resumed.' };
 };
 
 module.exports = resumeService;

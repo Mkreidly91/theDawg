@@ -1,20 +1,20 @@
-const { bold } = require("discord.js");
-const theDawgError = require("../Errors/theDawgError");
-const { resultsToRowOfButtons } = require("../Helpers/buttonBuilder.helpers");
-const { searchService } = require("../services");
-const playController = require("./play.controller");
-const { Events } = require("discord.js");
+const { bold } = require('discord.js');
+const theDawgError = require('../Errors/theDawgError');
+const { resultsToRowOfButtons } = require('../Helpers/buttonBuilder.helpers');
+const { searchService } = require('../services');
+const playController = require('./play.controller');
+
 const {
   searchingEmbed,
   normalMessageEmbed,
   errorMessageEmbed,
-} = require("../Helpers/embeds.helpers");
+} = require('../Helpers/embeds.helpers');
 
 const searchController = async ({ message, args }) => {
   const { channel } = message;
   const { embed, file } = searchingEmbed();
   const msg = await channel.send({ embeds: [embed], files: [file] });
-  const { response, error } = await searchService({ message, args });
+  const { response, error } = await searchService(args);
 
   if (error) {
     await msg.delete();
@@ -24,7 +24,7 @@ const searchController = async ({ message, args }) => {
 
   const rows = resultsToRowOfButtons({ results: response, songs: true });
   const buttonsMessage = await msg.edit({
-    content: `${bold("Choose Song:")}`,
+    content: `${bold('Choose Song:')}`,
     components: [...rows],
     embeds: [],
     files: [],
@@ -34,7 +34,7 @@ const searchController = async ({ message, args }) => {
     time: 20_000, // how long you want it to collect for, in ms (this is 15 seconds)
   });
 
-  collector.on("collect", async (interaction) => {
+  collector.on('collect', async (interaction) => {
     if (interaction.isChatInputCommand()) return;
     if (!interaction.isButton()) return;
     const person = message.guild.members.cache.get(interaction.user.id);
@@ -61,7 +61,6 @@ const searchController = async ({ message, args }) => {
           song: selectedSong,
         });
         if (error) {
-          console.log(error);
           await interaction.followUp({
             embeds: [errorMessageEmbed(`theDawgError: ${error}`)],
           });
