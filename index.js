@@ -77,9 +77,6 @@ client.on(Events.MessageCreate, async (message) => {
     author: { bot },
   } = message;
 
-  // if (!bot && channel.isDMBased()) {
-  //   message.channel.send('shu baddak');
-  // }
   try {
     routeManager(message);
   } catch (error) {
