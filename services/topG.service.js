@@ -3,9 +3,7 @@ const { getAudioManager, getOrCreate } = require('../database');
 const { playCustom, joinVoice } = require('../Helpers/voice.helpers');
 
 const topG_service = async (message) => {
-  const {
-    guild: { id: guildId },
-  } = message;
+  const { guildId } = message;
 
   const topGMp3 = path.resolve('Resources', 'topG.mp3');
   const audioManager = joinVoice({

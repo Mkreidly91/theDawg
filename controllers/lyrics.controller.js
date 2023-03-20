@@ -3,7 +3,10 @@ const { lyricsService } = require('../services');
 const { bold } = require('@discordjs/builders');
 
 const { resultsToRowOfButtons } = require('../Helpers/buttonBuilder.helpers');
-const { searchingEmbed } = require('../Helpers/embeds.helpers');
+const {
+  searchingEmbed,
+  normalMessageEmbed,
+} = require('../Helpers/embeds.helpers');
 const { splitMsg } = require('../Helpers/util.helpers');
 
 const lyricsController = async ({ message, args }) => {
@@ -43,9 +46,9 @@ const lyricsController = async ({ message, args }) => {
     if (selectedSong) {
       if (selectedSong?.instrumental) {
         const { fullTitle } = selectedSong;
-        return await interaction.followUp(
-          `${bold(fullTitle)} is an instrumental`
-        );
+        return await interaction.followUp({
+          embeds: [normalMessageEmbed(`${fullTitle} is an instrumental`)],
+        });
       }
 
       const { fullTitle } = selectedSong;

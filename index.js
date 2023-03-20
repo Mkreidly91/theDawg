@@ -51,6 +51,25 @@ client.once(Events.ClientReady, (c) => {
     }
   });
 });
+client.on(Events.GuildCreate, (guild) => {
+  guildCollection.set(guild.id, {
+    guildId: guild.id,
+    guildName: guild.name,
+    audioManager: {
+      audioPlayer: null,
+      textChannel: null,
+      voiceChannel: null,
+      connection: null,
+      queue: [],
+      isPlaying: false,
+      currentSong: null,
+    },
+  });
+});
+
+client.on(Events.GuildDelete, (guild) => {
+  guildCollection.delete(guild.id);
+});
 
 client.on(Events.MessageCreate, async (message) => {
   const {
@@ -58,9 +77,9 @@ client.on(Events.MessageCreate, async (message) => {
     author: { bot },
   } = message;
 
-  if (!bot && channel.isDMBased()) {
-    message.channel.send('shu baddak');
-  }
+  // if (!bot && channel.isDMBased()) {
+  //   message.channel.send('shu baddak');
+  // }
   try {
     routeManager(message);
   } catch (error) {

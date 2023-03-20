@@ -11,17 +11,19 @@ const isAdmin = (member) => {
 
 const routes = require('../routes');
 
-const routeManager = (message, client) => {
+const routeManager = async (message, client) => {
   const {
     content,
     member,
     author: { bot },
     channel,
   } = message;
+
   if (!bot && !channel.isDMBased()) {
     if (content.trim().startsWith(PREFIX)) {
       if (isAdmin(member)) {
         const command = content.substring(1).split(' ')[0];
+
         routes[command]
           ? routes[command](message, client)
           : new theDawgError(message.channel, 'Invalid Command').send();

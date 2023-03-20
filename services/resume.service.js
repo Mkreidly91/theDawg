@@ -1,16 +1,16 @@
 const { getAudioManager } = require('../database');
 
 const resumeService = (message) => {
-  const { guildid } = message;
+  const { guildId } = message;
 
-  const audiomanager = getAudioManager(guildid);
-  const { audioplayer } = audiomanager;
+  const audioManager = getAudioManager(guildId);
+  const { audioPlayer } = audioManager;
 
-  if (!audioplayer) {
+  if (!audioPlayer) {
     return { error: 'no audio player connected' };
   }
 
-  audioplayer.unpause();
+  audioPlayer.unpause();
   return { response: 'playback resumed.' };
 };
 

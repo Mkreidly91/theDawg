@@ -1,4 +1,5 @@
-const theDawgError = require("./theDawgError");
+const theDawgError = require('./theDawgError');
+const { yt_validate } = require('play-dl');
 
 const voiceConnectionError = (message) => {
   const { member, channel: textChannel } = message;
@@ -16,7 +17,7 @@ const voiceConnectionError = (message) => {
 
 const audioPlayerError = ({ textChannel, audioPlayer }) => {
   if (!audioPlayer) {
-    new theDawgError(textChannel, "No audio player connected").send();
+    new theDawgError(textChannel, 'No audio player connected').send();
     return true;
   }
   return false;
@@ -30,8 +31,10 @@ const playArgsError = ({ textChannel, args }) => {
     ).send();
     return true;
   }
+
   return false;
 };
+
 const searchArgsError = ({ textChannel, args }) => {
   if (!args.trim()) {
     new theDawgError(
@@ -39,16 +42,22 @@ const searchArgsError = ({ textChannel, args }) => {
       `Please provide an argument: "-search {{song}}"`
     ).send();
     return true;
+  } else if (yt_validate(args.trim()) !== 'search') {
+    new theDawgError(
+      textChannel,
+      'Search does not take url as an argument.'
+    ).send();
+    return true;
   }
   return false;
 };
 const seekArgsError = ({ args, audioManager }) => {
-  let error = "";
+  let error = '';
 
   const { currentSong } = audioManager;
   const { duration } = currentSong;
   if (!currentSong) {
-    error = "Nothing to seek brudda";
+    error = 'Nothing to seek brudda';
   }
   if (args < 0) {
     error = `Input must be a positive number`;

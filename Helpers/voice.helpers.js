@@ -11,7 +11,6 @@ const { bold } = require('discord.js');
 
 const play = require('play-dl');
 const { resetState } = require('../database');
-const { nowPlayingEmbed } = require('./embeds.helpers');
 const { getBestSong } = require('./search.helpers');
 
 const joinVoice = ({ message, audioManager }) => {
@@ -95,7 +94,7 @@ const searchSong = async (args, getAllResults = false) => {
           const info = await play.video_basic_info(bestResult.url);
           return { info, type: 'search' };
         } catch (error) {
-          return { error };
+          return { error, type: 'search' };
         }
       } else {
         const videos = await Promise.allSettled(
@@ -109,8 +108,12 @@ const searchSong = async (args, getAllResults = false) => {
     }
 
     case 'video': {
-      const info = await play.video_basic_info(args);
-      return { info, type: 'video' };
+      try {
+        const info = await play.video_basic_info(args);
+        return { info, type: 'video' };
+      } catch (error) {
+        return { error, type: 'video' };
+      }
     }
 
     case 'playlist': {
@@ -141,9 +144,17 @@ const addToQ = async ({ args, audioManager, song }) => {
     };
   }
   const { info, type, error } = await searchSong(args);
+
   if (error) {
-    return { error: `Oops,something went wrong, try -search ${args}` };
+    switch (type) {
+      case 'search':
+      case 'playlist':
+        return { error: `Oops,something went wrong, try -search ${args}` };
+      case 'video':
+        return { error: `Oops,something went wrong` };
+    }
   }
+
   if (type === 'playlist') {
     const [playlistInfo, videos] = info;
     const { title, channel } = playlistInfo;
@@ -187,11 +198,12 @@ const addToQ = async ({ args, audioManager, song }) => {
 };
 
 const playSong = async ({ seek = 0, audioManager }) => {
-  const { queue, audioPlayer, textChannel } = audioManager;
+  const { queue, audioPlayer } = audioManager;
 
   if (!audioManager.isPlaying) {
     //keeping track of last played song
     audioManager.currentSong = queue[0];
+
     const audio = await play.stream(queue[0].url, {
       discordPlayerCompatibility: false,
       seek,
@@ -201,10 +213,6 @@ const playSong = async ({ seek = 0, audioManager }) => {
       inlineVolume: false,
       inputType: audio.type,
     });
-
-    if (seek === 0) {
-      await textChannel.send({ embeds: [nowPlayingEmbed(queue[0])] });
-    }
 
     audioPlayer.play(resource);
     audioManager.isPlaying = true;

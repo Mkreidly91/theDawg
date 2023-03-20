@@ -1,5 +1,5 @@
-const { deafenController } = require("../controllers");
-const theDawgError = require("../Errors/theDawgError");
+const { deafenController } = require('../controllers');
+const theDawgError = require('../Errors/theDawgError');
 
 const deafen = async (message) => {
   const members = message.mentions.members;
