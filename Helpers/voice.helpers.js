@@ -62,7 +62,7 @@ const joinVoice = ({ message, audioManager }) => {
         setTimeout(() => {
           destroyConnection(audioManager);
           resetState(guildId);
-        }, 5000);
+        }, 60000);
       }
     });
     //Solution for random 1min connection disconnect caused by an update on Discord's side
