@@ -73,4 +73,6 @@ A music player discord bot created with Discord.js
 - ### lyrics:
 
   - **Description**: Takes a search string, then presents the user with a list of songs to choose from. If not given an argument, it will return the lyrics of what's currently playing.<br>
-  - **Usage**: -lyrics \<search string> or -lyrics
+  - **Usage**: -lyrics \<search string> or -lyrics <br><br>
+
+[**Add me to your discord!**](https://discord.com/api/oauth2/authorize?client_id=1061246270838157342&permissions=8&scope=bot)
