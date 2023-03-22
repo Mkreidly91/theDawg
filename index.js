@@ -72,11 +72,6 @@ client.on(Events.GuildDelete, (guild) => {
 });
 
 client.on(Events.MessageCreate, async (message) => {
-  const {
-    channel,
-    author: { bot },
-  } = message;
-
   try {
     routeManager(message);
   } catch (error) {
