@@ -18,7 +18,7 @@ const routeManager = async (message, client) => {
     author: { bot },
     channel,
   } = message;
-
+  
   if (!bot && !channel.isDMBased()) {
     if (content.trim().startsWith(PREFIX)) {
       if (isAdmin(member)) {
