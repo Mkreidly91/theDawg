@@ -6,10 +6,9 @@ const {
 } = require('../Errors/voiceErrors');
 
 const search = async (message) => {
+  const { content } = message;
   if (voiceConnectionError(message)) return;
-  const content = message.content.split(' ');
-  content.shift();
-  const args = content.join(' ');
+  const args = content.replace('-search', '').trim();
   if (searchArgsError({ textChannel: message.channel, args })) return;
   searchController({ message, args });
 };

@@ -6,11 +6,11 @@ const {
 } = require('../Errors/voiceErrors');
 
 const play = async (message) => {
+  const { content } = message;
   if (voiceConnectionError(message)) return;
 
-  const content = message.content.split(' ');
-  content.shift();
-  const args = content.join(' ');
+  const args = content.replace('-play', '').trim();
+
   if (playArgsError({ textChannel: message.channel, args })) return;
   playController({ message, args });
 };

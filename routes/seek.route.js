@@ -1,11 +1,12 @@
-const { seekController } = require("../controllers");
-const theDawgError = require("../Errors/theDawgError");
-const { voiceConnectionError } = require("../Errors/voiceErrors");
+const { seekController } = require('../controllers');
+const theDawgError = require('../Errors/theDawgError');
+const { voiceConnectionError } = require('../Errors/voiceErrors');
 
 const seek = (message) => {
   const { channel, content } = message;
   if (voiceConnectionError(message)) return;
-  const args = content.split(" ")[1];
+
+  const args = content.replace('-seek', '').trim();
 
   if (!args || isNaN(parseInt(args))) {
     new theDawgError(

@@ -2,11 +2,10 @@ const { lyricsController } = require('../controllers');
 const { voiceConnectionError } = require('../Errors/voiceErrors');
 
 const lyrics = async (message) => {
-  const content = message.content.split(' ');
-  content.shift();
-  const args = content.join(' ');
+  const { content } = message;
+  const args = content.replace('-lyrics', '').trim();
 
-  if (!content[0]) {
+  if (!args) {
     if (voiceConnectionError(message)) return;
   }
 

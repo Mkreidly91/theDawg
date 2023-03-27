@@ -8,9 +8,9 @@ const {
   VoiceConnectionStatus,
 } = require('@discordjs/voice');
 const { bold } = require('discord.js');
-
 const play = require('play-dl');
 const { resetState } = require('../database');
+const { nowPlayingEmbed } = require('./embeds.helpers');
 const { getBestSong } = require('./search.helpers');
 
 const joinVoice = ({ message, audioManager }) => {
@@ -57,12 +57,19 @@ const joinVoice = ({ message, audioManager }) => {
     audioManager.connection.subscribe(audioPlayer);
 
     //disconnect after 5 seconds of idle
-    audioPlayer.once(AudioPlayerStatus.Idle, () => {
-      if (audioManager.queue.length === 0) {
+    audioPlayer.on(AudioPlayerStatus.Idle, () => {
+      audioManager.isPlaying = false;
+      if (audioManager.queue.length !== 0) playSong({ audioManager });
+      else if (audioManager.queue.length === 0) {
         setTimeout(() => {
-          destroyConnection(audioManager);
-          resetState(guildId);
-        }, 60000);
+          if (
+            audioManager.queue.length === 0 &&
+            audioManager.isPlaying === false
+          ) {
+            destroyConnection(audioManager);
+            resetState(guildId);
+          }
+        }, 5000);
       }
     });
     //Solution for random 1min connection disconnect caused by an update on Discord's side
@@ -197,8 +204,8 @@ const addToQ = async ({ args, audioManager, song }) => {
   }
 };
 
-const playSong = async ({ seek = 0, audioManager }) => {
-  const { queue, audioPlayer } = audioManager;
+const playSong = async ({ seek, audioManager }) => {
+  const { queue, audioPlayer, textChannel } = audioManager;
 
   if (!audioManager.isPlaying) {
     //keeping track of last played song
@@ -206,7 +213,7 @@ const playSong = async ({ seek = 0, audioManager }) => {
 
     const audio = await play.stream(queue[0].url, {
       discordPlayerCompatibility: false,
-      seek,
+      seek: seek || 0,
     });
 
     const resource = createAudioResource(audio.stream, {
@@ -214,15 +221,14 @@ const playSong = async ({ seek = 0, audioManager }) => {
       inputType: audio.type,
     });
 
+    if (!seek) {
+      textChannel.send({ embeds: [nowPlayingEmbed(audioManager.currentSong)] });
+    }
+
     audioPlayer.play(resource);
     audioManager.isPlaying = true;
     queue.shift();
   }
-
-  audioPlayer.once(AudioPlayerStatus.Idle, () => {
-    audioManager.isPlaying = false;
-    if (queue.length !== 0) playSong({ audioManager });
-  });
 };
 
 const playYt = async (audioManager) => {
