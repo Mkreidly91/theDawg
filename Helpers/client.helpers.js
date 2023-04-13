@@ -18,12 +18,13 @@ const routeManager = async (message, client) => {
     author: { bot },
     channel,
   } = message;
-  
+  const exclude = ['topG', 'pastaAk'];
   if (!bot && !channel.isDMBased()) {
     if (content.trim().startsWith(PREFIX)) {
       if (isAdmin(member)) {
-        const command = content.substring(1).split(' ')[0];
-
+        let command = content.substring(1).split(' ')[0];
+        const excluded = exclude.includes(command);
+        command = excluded ? command : command.toLowerCase();
         routes[command]
           ? routes[command](message, client)
           : new theDawgError(message.channel, 'Invalid Command').send();
