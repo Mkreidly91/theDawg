@@ -9,7 +9,10 @@ const play = async (message) => {
   const { content } = message;
   if (voiceConnectionError(message)) return;
 
-  const args = content.replace('-play', '').trim();
+  let args = content.replace('-play', '').trim();
+  if (args.includes('&list')) {
+    args = args.substring(0, args.indexOf('&list'));
+  }
 
   if (playArgsError({ textChannel: message.channel, args })) return;
   playController({ message, args });
