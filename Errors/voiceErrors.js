@@ -30,6 +30,9 @@ const playArgsError = ({ textChannel, args }) => {
       `Please provide an argument: "-play {{search or url}}"`
     ).send();
     return true;
+  } else if (yt_validate(args.trim()) === false) {
+    new theDawgError(textChannel, `Please provide a valid URL`).send();
+    return true;
   }
 
   return false;
