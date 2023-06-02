@@ -1,10 +1,10 @@
-const theDawgError = require("../Errors/theDawgError");
+const theDawgError = require('../Errors/theDawgError');
 const {
   searchingEmbed,
   normalMessageEmbed,
-} = require("../Helpers/embeds.helpers");
+} = require('../Helpers/embeds.helpers');
 
-const { playService } = require("../services");
+const { playService } = require('../services');
 
 const playController = async ({ message, args, song }) => {
   const { channel } = message;

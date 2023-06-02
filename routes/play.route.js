@@ -14,7 +14,7 @@ const play = async (message) => {
     args = args.substring(0, args.indexOf('&list'));
   }
 
-  if (playArgsError({ textChannel: message.channel, args })) return;
+  if (await playArgsError({ textChannel: message.channel, args })) return;
   playController({ message, args });
 };
 

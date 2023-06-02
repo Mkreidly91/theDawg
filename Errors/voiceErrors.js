@@ -1,5 +1,5 @@
 const theDawgError = require('./theDawgError');
-const { yt_validate } = require('play-dl');
+const { yt_validate, playlist_info } = require('play-dl');
 
 const voiceConnectionError = (message) => {
   const { member, channel: textChannel } = message;
@@ -23,19 +23,44 @@ const audioPlayerError = ({ textChannel, audioPlayer }) => {
   return false;
 };
 
-const playArgsError = ({ textChannel, args }) => {
-  if (!args.trim()) {
+const playArgsError = async ({ textChannel, args }) => {
+  const url = args.trim();
+
+  const urlValidation = () => {
+    try {
+      const result = yt_validate(url);
+      return result;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  if (!url) {
     new theDawgError(
       textChannel,
       `Please provide an argument: "-play {{search or url}}"`
     ).send();
     return true;
-  } else if (yt_validate(args.trim()) === false) {
-    new theDawgError(textChannel, `Please provide a valid URL`).send();
-    return true;
   }
 
-  return false;
+  switch (urlValidation()) {
+    case false:
+      new theDawgError(textChannel, `Please provide a valid URL`).send();
+      return true;
+
+    case 'playlist':
+      try {
+        await playlist_info(url);
+      } catch (error) {
+        new theDawgError(
+          textChannel,
+          `The playlist does not exist. Please provide a valid URL`
+        ).send();
+        return true;
+      }
+    default:
+      return false;
+  }
 };
 
 const searchArgsError = ({ textChannel, args }) => {

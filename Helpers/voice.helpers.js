@@ -125,6 +125,7 @@ const searchSong = async (args, getAllResults = false) => {
 
     case 'playlist': {
       const playlistInfo = await play.playlist_info(args);
+
       const videos = await Promise.allSettled(
         playlistInfo.videos.map(async (video) => {
           const videoInfo = await play.video_basic_info(video.url);
